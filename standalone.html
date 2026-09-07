@@ -1,0 +1,2736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaundryHub - On-Demand Local Laundry Marketplace</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #0ea5e9;
+      --accent-light: #e0f2fe;
+      --secondary: #10b981;
+      --secondary-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --bg-main: #f8fafc;
+      --bg-surface: #ffffff;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+      --shadow-glow: 0 8px 24px rgba(79, 70, 229, 0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--bg-main); color: var(--text-main); line-height: 1.5; }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 700; }
+    button { font-family: var(--font-heading); cursor: pointer; border: none; outline: none; transition: all 0.15s ease; }
+    input, select, textarea { font-family: var(--font-body); outline: none; }
+
+    .app-container { min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* Demo Banner */
+    .demo-bar {
+      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+      color: #0f172a; padding: 8px 24px; display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; font-weight: 700;
+    }
+    .demo-btn-pill {
+      background: #0f172a; color: white; padding: 4px 14px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;
+    }
+    .demo-btn-pill:hover { background: #1e293b; }
+
+    /* Role Switcher Banner */
+    .role-banner {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: #fff; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;
+    }
+    .role-switcher { display: flex; gap: 6px; background: rgba(255, 255, 255, 0.12); padding: 4px; border-radius: var(--radius-full); }
+    .role-btn {
+      padding: 6px 18px; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; color: #c7d2fe; background: transparent;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .role-btn:hover { color: #ffffff; background: rgba(255, 255, 255, 0.1); }
+    .role-btn.active { background: var(--primary); color: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
+
+    /* Navbar */
+    .navbar {
+      position: sticky; top: 0; z-index: 50; background: #ffffff; border-bottom: 1px solid var(--border-light);
+      padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; font-family: var(--font-heading); cursor: pointer; }
+    .brand-icon {
+      width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-glow);
+    }
+    .location-picker {
+      display: flex; align-items: center; gap: 8px; background: var(--bg-main); border: 1px solid var(--border-medium);
+      padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.875rem; color: var(--text-muted);
+    }
+    .cart-btn {
+      background: var(--primary-light); color: var(--primary); padding: 10px 18px; border-radius: var(--radius-full);
+      font-weight: 600; display: flex; align-items: center; gap: 8px; position: relative;
+    }
+    .cart-btn:hover { background: var(--primary); color: white; }
+    .cart-count { background: var(--danger); color: white; font-size: 0.75rem; font-weight: 700; width: 20px; height: 20px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; }
+
+    /* Main Content */
+    .main-content { flex: 1; max-width: 1280px; width: 100%; margin: 0 auto; padding: 24px; }
+    
+    .hero-banner {
+      background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #0284c7 100%);
+      border-radius: var(--radius-lg); padding: 40px; color: white; margin-bottom: 32px; box-shadow: var(--shadow-lg);
+    }
+    .hero-title { font-size: 2.4rem; font-weight: 800; line-height: 1.15; margin-bottom: 12px; }
+    .hero-subtitle { font-size: 1.05rem; color: #e0e7ff; margin-bottom: 24px; }
+
+    .search-bar {
+      display: flex; background: white; border-radius: var(--radius-full); padding: 6px 8px 6px 20px; align-items: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 520px;
+    }
+    .search-input { border: none; outline: none; flex: 1; font-size: 0.95rem; color: var(--text-main); }
+    .search-btn { background: var(--primary); color: white; padding: 10px 24px; border-radius: var(--radius-full); font-weight: 600; }
+
+    .filters-row { display: flex; gap: 12px; margin-bottom: 24px; overflow-x: auto; }
+    .filter-chip {
+      padding: 8px 18px; background: white; border: 1px solid var(--border-medium); border-radius: var(--radius-full);
+      font-size: 0.875rem; font-weight: 500; color: var(--text-muted); cursor: pointer;
+    }
+    .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .shops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .shop-card { background: white; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; transition: 0.2s ease; }
+    .shop-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .shop-banner { height: 140px; background-size: cover; background-position: center; padding: 12px; display: flex; justify-content: space-between; }
+    .shop-badge { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); color: white; padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; }
+    .shop-body { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+    .shop-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+    .shop-address { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+    .view-btn { background: var(--primary); color: white; padding: 8px 18px; border-radius: var(--radius-md); font-weight: 600; }
+    .view-btn:hover { background: var(--primary-hover); }
+
+    /* Modals */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-content { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: white; z-index: 10; }
+    .close-btn { background: var(--bg-main); border-radius: var(--radius-full); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; }
+
+    /* Stepper */
+    .tracker-stepper { display: flex; justify-content: space-between; position: relative; margin: 24px 0; }
+    .step-node { display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2; background: white; padding: 0 4px; }
+    .step-circle { width: 34px; height: 34px; border-radius: var(--radius-full); background: var(--bg-main); border: 2px solid var(--border-medium); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
+    .step-node.completed .step-circle { background: var(--secondary); border-color: var(--secondary); color: white; }
+    .step-node.active .step-circle { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* Badges */
+    .badge { display: inline-flex; padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge-pending { background: var(--warning-light); color: #b45309; }
+    .badge-processing { background: var(--accent-light); color: #0369a1; }
+    .badge-completed { background: var(--secondary-light); color: #047857; }
+    .badge-rejected { background: var(--danger-light); color: var(--danger); }
+    .badge-warning { background: var(--warning-light); color: #b45309; border: 1px solid #f59e0b; }
+
+    /* Dashboard board */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 28px; }
+    .stat-card { background: white; padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-light); display: flex; align-items: center; gap: 16px; }
+    .stat-val { font-size: 1.5rem; font-weight: 800; }
+    .stat-lbl { font-size: 0.85rem; color: var(--text-muted); }
+    .orders-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .board-col { background: #f1f5f9; padding: 16px; border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 12px; }
+    .order-card { background: white; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-light); }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const initialUserDB = [
+      { id: 'usr-1', role: 'customer', name: 'Priya Patel', email: 'priya@example.in', phone: '+91 98765 43210', address: 'Flat 302, Royal Residency, Alkapuri, Vadodara - 390007', password: '123' },
+      { id: 'usr-jadav', role: 'vendor', name: 'Jadav Laundry Provider', email: 'jadav@laundryhub.in', phone: '+91 98980 12345', address: 'Jadav Express Hub, Alkapuri Main Road, Vadodara - 390007', shopId: 'shop-jadav', password: '123' },
+      { id: 'usr-2', role: 'vendor', name: 'Vikram Patel', email: 'vikram@bandboxvadodara.in', phone: '+91 265 233 4567', address: 'Opposite Alkapuri Club, RC Dutt Road, Alkapuri, Vadodara - 390007', shopId: 'shop-1', password: '123' },
+      { id: 'usr-3', role: 'admin', name: 'Platform Admin', email: 'admin@laundryhub.in', phone: '+91 99000 11122', password: '123' }
+    ];
+
+    const initialComplaints = [
+      {
+        id: 'cmp-101',
+        customerName: 'Rohan Gupta',
+        shopId: 'shop-1',
+        shopName: 'Bandbox Dry Cleaners & Laundry',
+        orderId: 'ORD-9482',
+        rating: 1,
+        text: 'Clothes were returned late by 4 hours and shirts had heavy creases.',
+        status: 'Under Review',
+        date: '2026-08-11'
+      },
+      {
+        id: 'cmp-102',
+        customerName: 'Priya Patel',
+        shopId: 'shop-2',
+        shopName: 'FreshPress Eco Cleaners',
+        orderId: 'ORD-9481',
+        rating: 2,
+        text: 'Detergent scent was strong despite choosing fragrance-free option.',
+        status: 'Under Review',
+        date: '2026-08-10'
+      }
+    ];
+
+    const initialPendingProviders = [
+      {
+        id: "req-101",
+        shopName: "Pramukh Express Dry Cleaners",
+        ownerName: "Chirag Joshi",
+        phone: "+91 98250 33441",
+        email: "chirag@pramukhdryclean.in",
+        address: "Gotri-Vasna Road, Near Yash Complex, Gotri, Vadodara - 390021",
+        businessLicenseNo: "GSTIN24ABCDE1234F1Z5",
+        taxIdNo: "PAN-ABCDE1234F",
+        idProofStatus: "Verified Aadhaar & Trade License",
+        operatingHours: "Mon-Sat: 8:00 AM - 8:00 PM",
+        servicesOffered: ["Wash & Fold", "Steam Ironing", "Express 24h"],
+        status: "Pending Review",
+        appliedDate: "2026-08-10"
+      },
+      {
+        id: "req-102",
+        shopName: "Janta Dry Cleaners & Steam Press",
+        ownerName: "Sanjay Parikh",
+        phone: "+91 99798 33445",
+        email: "sanjay@jantadryclean.in",
+        address: "Water Tank Road, Karelibaug, Vadodara - 390018",
+        businessLicenseNo: "GSTIN24XYZAB5678G2Z1",
+        taxIdNo: "PAN-XYZAB5678G",
+        idProofStatus: "Verified Business Certificate",
+        operatingHours: "Daily: 7:00 AM - 10:00 PM",
+        servicesOffered: ["Saree Dry Clean", "Sneaker Deep Care"],
+        status: "Pending Review",
+        appliedDate: "2026-08-11"
+      }
+    ];
+
+    function loadDB(key, fallback) {
+      try {
+        const saved = localStorage.getItem('laundryhub_' + key);
+        if (saved) {
+          if (saved.includes('$') || saved.includes('Sarah') || saved.includes('Evergreen') || saved.includes('Bengaluru') || saved.includes('Bellandur') || saved.includes('Indiranagar')) {
+            localStorage.removeItem('laundryhub_' + key);
+            return fallback;
+          }
+          const parsed = JSON.parse(saved);
+          if (key === 'shops' && Array.isArray(parsed) && parsed.length < 10) {
+            localStorage.removeItem('laundryhub_shops');
+            return fallback;
+          }
+          return parsed;
+        }
+        return fallback;
+      } catch(e) { return fallback; }
+    }
+
+    function saveDB(key, val) {
+      try { localStorage.setItem('laundryhub_' + key, JSON.stringify(val)); } catch(e) {}
+    }
+
+    const API_BASE = 'http://localhost:8080/api';
+    async function syncWithJavaBackend() {
+      try {
+        const resShops = await fetch(`${API_BASE}/shops`, { method: 'GET' });
+        if (resShops.ok) {
+          const data = await resShops.json();
+          if (data && data.length > 0) {
+            state.shops = data;
+            saveDB('shops', data);
+          }
+        }
+        const resOrders = await fetch(`${API_BASE}/orders`, { method: 'GET' });
+        if (resOrders.ok) {
+          const data = await resOrders.json();
+          if (data && data.length > 0) {
+            state.orders = data;
+            saveDB('orders', data);
+          }
+        }
+      } catch (e) {
+        console.log("Java REST API offline, running in standalone LocalStorage mode.");
+      }
+    }
+    function saveSession() {
+      saveDB('currentUser', state.user);
+      saveDB('currentRole', state.role);
+      saveDB('currentView', state.view);
+    }
+
+    const savedUser = loadDB('currentUser', null);
+    const savedRole = loadDB('currentRole', savedUser ? (savedUser.role || 'customer') : 'customer');
+    const savedView = loadDB('currentView', savedUser ? 'app' : 'welcome');
+
+    // Global State
+    const state = {
+      view: savedView,
+      role: savedRole,
+      user: savedUser,
+      authTab: 'none',
+      isDemoModalOpen: false,
+      reviewProviderModalId: null,
+      warningModalShopId: null,
+      warningDefaultText: '',
+      authErrorMsg: '',
+      activeShopModal: null,
+      isCartOpen: false,
+      isCheckoutOpen: false,
+      activeTrackerId: null,
+      filter: 'All',
+      userLocation: loadDB('userLocation', 'Flat 302, Royal Residency, Alkapuri, Vadodara - 390007'),
+      userDB: loadDB('userDB', initialUserDB),
+      complaints: loadDB('complaints', initialComplaints),
+      pendingProviders: loadDB('pendingProviders', initialPendingProviders),
+      shops: loadDB('shops', [
+        {
+          id: "shop-jadav",
+          name: "Jadav Laundry & Dry Cleaning Services",
+          ownerName: "Jadav Laundry Provider",
+          rating: 5.0,
+          reviewsCount: 48,
+          distance: "0.3 km away (Nearest)",
+          turnaround: "24 Hours Express",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Jadav Express Hub, Alkapuri Main Road, Vadodara - 390007",
+          phone: "+91 98980 12345",
+          image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
+          tags: ["Verified Vendor", "Express 24h", "Shoe Care", "Dry Cleaning"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "sj-1", name: "Wash & Fold (per kg)", price: 60.00, unit: "kg", desc: "Clean & fresh washed daily wear" },
+            { id: "sj-2", name: "Shirt & Kurta Steam Press", price: 20.00, unit: "piece", desc: "Crisp precision steam press" },
+            { id: "sj-3", name: "Heavy Suit & Saree Dry Clean", price: 240.00, unit: "set", desc: "Eco-solvent dry cleaning care" },
+            { id: "sj-4", name: "Sneaker & Shoe Deep Cleansing", price: 249.00, unit: "pair", desc: "Deep foam scrubbing & deodorizing" }
+          ]
+        },
+        {
+          id: "shop-1",
+          name: "Bandbox Dry Cleaners & Laundry",
+          ownerName: "Rajesh Patel",
+          rating: 4.9,
+          reviewsCount: 142,
+          distance: "0.8 km away",
+          turnaround: "24-48 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Opposite Alkapuri Club, RC Dutt Road, Alkapuri, Vadodara - 390007",
+          phone: "+91 265 233 4567",
+          image: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=800&q=80",
+          tags: ["Eco-Friendly", "Express 24h", "Heavy Saree Care"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Wash & Fold (per kg)", price: 60.00, unit: "kg", desc: "Washed, dried & neatly folded daily wear" },
+            { id: "s2", name: "Wash & Steam Iron (per piece)", price: 25.00, unit: "piece", desc: "Crisp steam pressed shirts, kurtas & trousers" },
+            { id: "s3", name: "Heavy Saree & Suit Dry Clean", price: 250.00, unit: "set", desc: "Professional eco-solvent dry cleaning for festive wear" },
+            { id: "s4", name: "Sneaker & Shoe Deep Wash", price: 299.00, unit: "pair", desc: "Deep foam cleansing, deodorizing & sole restoration" }
+          ]
+        },
+        {
+          id: "shop-2",
+          name: "U-Clean Laundry & Dry Cleaning",
+          ownerName: "Anita Shah",
+          rating: 4.8,
+          reviewsCount: 98,
+          distance: "1.4 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: false,
+          address: "Opposite Akota Garden, Productivity Road, Akota, Vadodara - 390020",
+          phone: "+91 97250 88990",
+          image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
+          tags: ["Organic Detergents", "Express 24h"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Wash & Fold (per kg)", price: 55.00, unit: "kg", desc: "100% Organic plant-based detergent" },
+            { id: "s2", name: "Shirt & Kurta Steam Press", price: 20.00, unit: "piece", desc: "Wrinkle-free precision steam finish" },
+            { id: "s3", name: "Delicate Silk Saree & Chaniya Choli Wash", price: 220.00, unit: "piece", desc: "Gentle hand-wash cycle & flat dry" }
+          ]
+        },
+        {
+          id: "shop-3",
+          name: "Snowhite Dry Cleaners & Steam Studio",
+          ownerName: "Karan Amin",
+          rating: 4.9,
+          reviewsCount: 176,
+          distance: "0.5 km away",
+          turnaround: "3 Hours Super Rush",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Near Seven Seas Mall, Fatehgunj Main Road, Vadodara - 390002",
+          phone: "+91 265 278 4432",
+          image: "https://images.unsplash.com/photo-1489274495757-95c7c837b101?auto=format&fit=crop&w=800&q=80",
+          tags: ["3h Emergency Rush", "Shoe Specialist", "Home Ironing"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Doorstep Home Steam Ironing (10 Garments)", price: 199.00, unit: "bundle", desc: "Professional steam presser visits your home" },
+            { id: "s2", name: "Suede & Sneaker Stain Restoration", price: 349.00, unit: "pair", desc: "Delicate water repellent spray & nap brushing" },
+            { id: "s3", name: "Shirt & Trouser Home Express Ironing", price: 22.00, unit: "piece", desc: "Fast wrinkle-free steam press delivered to your home" }
+          ]
+        },
+        {
+          id: "shop-4",
+          name: "Fabricspa Laundry & Dry Cleaners",
+          ownerName: "Jignesh Shah",
+          rating: 4.8,
+          reviewsCount: 114,
+          distance: "1.1 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Near Eva Mall, GIDC Main Road, Manjalpur, Vadodara - 390011",
+          phone: "+91 98981 77665",
+          image: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=800&q=80",
+          tags: ["Manjalpur Hub", "Express 24h", "Festive Dry Clean"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Wash & Fold (per kg)", price: 58.00, unit: "kg", desc: "Hygienic wash & scented dry fold" },
+            { id: "s2", name: "Heavy Kurta & Sherwani Dry Clean", price: 280.00, unit: "set", desc: "Solvent dry cleaning for wedding wear" }
+          ]
+        },
+        {
+          id: "shop-5",
+          name: "Spin 'N' Shine Premium Laundromat",
+          ownerName: "Sunita Parikh",
+          rating: 4.7,
+          reviewsCount: 89,
+          distance: "0.9 km away",
+          turnaround: "12-24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: false,
+          address: "VIP Road, Near Bright Day School, Karelibaug, Vadodara - 390018",
+          phone: "+91 98241 66778",
+          image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
+          tags: ["Karelibaug Hub", "Steam Press", "Doorstep Pickup"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Steam Ironing (10 Shirts)", price: 180.00, unit: "bundle", desc: "Crisp steam pressed daily wear" },
+            { id: "s2", name: "Blanket & Quilt Deep Wash", price: 350.00, unit: "piece", desc: "Antimicrobial duvet sanitization" }
+          ]
+        },
+        {
+          id: "shop-6",
+          name: "Cleanomat Eco Laundromat",
+          ownerName: "Vikram Joshi",
+          rating: 4.9,
+          reviewsCount: 156,
+          distance: "0.7 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Gotri Main Road, Near Sevasi Canal, Gotri, Vadodara - 390021",
+          phone: "+91 97241 55667",
+          image: "https://images.unsplash.com/photo-1489274495757-95c7c837b101?auto=format&fit=crop&w=800&q=80",
+          tags: ["Gotri & Sevasi Hub", "Sneaker Care", "3h Emergency"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Eco Wash & Fold (per kg)", price: 65.00, unit: "kg", desc: "Soft eco-detergent wash" },
+            { id: "s2", name: "Premium Sneaker Deep Cleansing", price: 299.00, unit: "pair", desc: "Sole scrubbing & deodorizing" }
+          ]
+        },
+        {
+          id: "shop-7",
+          name: "Baroda Central Dhobi Ghat & Shoe Care",
+          ownerName: "Mahesh Solanki",
+          rating: 4.8,
+          reviewsCount: 132,
+          distance: "0.4 km away",
+          turnaround: "12 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Railway Station Road, Sayajigunj, Vadodara - 390005",
+          phone: "+91 98791 44332",
+          image: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=800&q=80",
+          tags: ["Sayajigunj Hub", "Express 12h", "Station Express"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Fast Wash & Iron (per piece)", price: 22.00, unit: "piece", desc: "Quick turn-around express ironing" },
+            { id: "s2", name: "Suit & Blazer Dry Cleaning", price: 290.00, unit: "set", desc: "Formals & coat deep solvent clean" }
+          ]
+        },
+        {
+          id: "shop-8",
+          name: "Royal Steam Press & Dry Clean Hub",
+          ownerName: "Hardik Pandya",
+          rating: 4.9,
+          reviewsCount: 165,
+          distance: "0.5 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Opposite Inox Cinema, Old Padra Road, Vadodara - 390007",
+          phone: "+91 98253 99887",
+          image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
+          tags: ["OP Road Hub", "Steam Press", "Shoe Polish"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Premium Steam Pressing", price: 25.00, unit: "piece", desc: "Crisp wrinkle-free steam finish" },
+            { id: "s2", name: "Chaniya Choli & Dupatta Dry Clean", price: 320.00, unit: "set", desc: "Navratri & festive garment restoration" }
+          ]
+        },
+        {
+          id: "shop-9",
+          name: "Parul Express Student Laundry",
+          ownerName: "Bhavin Vora",
+          rating: 4.7,
+          reviewsCount: 94,
+          distance: "0.6 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: false,
+          address: "Near L&T Knowledge City, Waghodia Road, Vadodara - 390019",
+          phone: "+91 97230 66554",
+          image: "https://images.unsplash.com/photo-1489274495757-95c7c837b101?auto=format&fit=crop&w=800&q=80",
+          tags: ["Waghodia & Parul Hub", "Student Discounts", "Wash & Fold"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Bulk Student Wash & Fold (per kg)", price: 50.00, unit: "kg", desc: "Budget friendly wash & dry for hostelers" },
+            { id: "s2", name: "Jeans & Jacket Wash", price: 40.00, unit: "piece", desc: "Heavy denim deep wash" }
+          ]
+        },
+        {
+          id: "shop-10",
+          name: "Ellora Cleaners & Garment Care",
+          ownerName: "Nitin Mehta",
+          rating: 4.9,
+          reviewsCount: 188,
+          distance: "0.3 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "High Tank Road, Ellora Park, Subhanpura, Vadodara - 390023",
+          phone: "+91 98240 77889",
+          image: "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?auto=format&fit=crop&w=800&q=80",
+          tags: ["Subhanpura Hub", "Ellora Park", "Dry Cleaning"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Curtain & Sofa Cover Wash", price: 120.00, unit: "piece", desc: "Heavy upholstery dry wash" },
+            { id: "s2", name: "Kurta Steam Ironing", price: 25.00, unit: "piece", desc: "Gentle steam press" }
+          ]
+        },
+        {
+          id: "shop-11",
+          name: "Bhayli Express Steam Press & Dry Clean",
+          ownerName: "Alpesh Patel",
+          rating: 4.8,
+          reviewsCount: 102,
+          distance: "0.4 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Vasna-Bhayli Main Road, Near Bright CBSE School, Bhayli, Vadodara - 391410",
+          phone: "+91 98985 11223",
+          image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
+          tags: ["Bhayli Hub", "Bright School Road", "Doorstep Pickup"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Daily Wear Wash & Fold", price: 58.00, unit: "kg", desc: "Clean & folded daily clothes" },
+            { id: "s2", name: "Sneaker Cleansing", price: 249.00, unit: "pair", desc: "Shoe foam scrubbing & drying" }
+          ]
+        },
+        {
+          id: "shop-12",
+          name: "TumbleDry Laundry & Dry Clean Solution",
+          ownerName: "Dharmesh Shah",
+          rating: 4.8,
+          reviewsCount: 121,
+          distance: "0.4 km away",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: "Abhilasha Square, Sama Savli Road, Vadodara - 390008",
+          phone: "+91 265 235 9988",
+          image: "https://images.unsplash.com/photo-1489274495757-95c7c837b101?auto=format&fit=crop&w=800&q=80",
+          tags: ["Sama & Chhani Hub", "TumbleDry Franchise", "Festive Wash"],
+          status: "Approved",
+          warnings: [],
+          services: [
+            { id: "s1", name: "Sama Special Wash & Fold", price: 60.00, unit: "kg", desc: "Fresh scented wash" },
+            { id: "s2", name: "Sherwani & Heavy Suit Dry Clean", price: 350.00, unit: "set", desc: "Wedding garment dry clean" }
+          ]
+        }
+      ]),
+      orders: loadDB('orders', [
+        {
+          id: "ORD-9821",
+          customerName: "Sneha Kapadia",
+          customerPhone: "+91 98251 44556",
+          shopId: "shop-1",
+          shopName: "Bandbox Dry Cleaners & Laundry",
+          status: "Order Placed",
+          items: [
+            { name: "Wash & Fold", qty: 5, unit: "kg", price: 60.00 },
+            { name: "Heavy Saree & Suit Dry Clean", qty: 2, unit: "set", price: 250.00 },
+            { name: "Sneaker & Shoe Deep Wash", qty: 1, unit: "pair", price: 299.00 }
+          ],
+          totalAmount: 1189.00,
+          deliveryMode: "emergency",
+          pickupAddress: "Villa 14, Grand Monarch Bungalows, OP Road, Vadodara - 390007",
+          deliverySlot: "Today (In 3 Hours Rush)",
+          carePreferences: ["Hypoallergenic Detergent", "Extra Softener"]
+        },
+        {
+          id: "ORD-9754",
+          customerName: "Rahul Verma",
+          customerPhone: "+91 97129 88776",
+          shopId: "shop-1",
+          shopName: "Bandbox Dry Cleaners & Laundry",
+          status: "Order Placed",
+          items: [
+            { name: "Wash & Steam Press", qty: 10, unit: "piece", price: 25.00 },
+            { name: "Doorstep Home Steam Pressing", qty: 1, unit: "bundle", price: 199.00 }
+          ],
+          totalAmount: 494.00,
+          deliveryMode: "express",
+          pickupAddress: "Flat 501, Platinum Tower, RC Dutt Road, Alkapuri, Vadodara - 390007",
+          deliverySlot: "Tomorrow, 10:00 AM",
+          carePreferences: ["Extra Starch"]
+        },
+        {
+          id: "ORD-9482",
+          customerName: "Priya Patel",
+          customerPhone: "+91 98765 43210",
+          shopId: "shop-1",
+          shopName: "Bandbox Dry Cleaners & Laundry",
+          status: "In Washing",
+          items: [
+            { name: "Wash & Fold", qty: 4, unit: "kg", price: 60.00 },
+            { name: "Heavy Saree & Suit Dry Clean", qty: 1, unit: "set", price: 250.00 }
+          ],
+          totalAmount: 535.00,
+          deliveryMode: "standard",
+          pickupAddress: "Flat 302, Royal Residency, Alkapuri, Vadodara - 390007",
+          deliverySlot: "Tomorrow, 5:00 PM - 7:00 PM",
+          carePreferences: ["Hypoallergenic Detergent"]
+        },
+        {
+          id: "ORD-9310",
+          customerName: "Amit Shah",
+          customerPhone: "+91 98980 12345",
+          shopId: "shop-1",
+          shopName: "Bandbox Dry Cleaners & Laundry",
+          status: "Ready",
+          items: [
+            { name: "Sneaker & Shoe Deep Wash", qty: 2, unit: "pair", price: 299.00 }
+          ],
+          totalAmount: 643.00,
+          deliveryMode: "standard",
+          pickupAddress: "B-12, Sun Pharma Road, Akota, Vadodara - 390020",
+          deliverySlot: "Today, 6:00 PM",
+          carePreferences: ["Standard Detergent"]
+        },
+        {
+          id: "ORD-8940",
+          customerName: "Karan Parikh",
+          customerPhone: "+91 98240 11223",
+          shopId: "shop-1",
+          shopName: "Bandbox Dry Cleaners & Laundry",
+          status: "Rejected",
+          items: [
+            { name: "Heavy Saree & Suit Dry Clean", qty: 8, unit: "set", price: 250.00 }
+          ],
+          totalAmount: 2045.00,
+          deliveryMode: "emergency",
+          pickupAddress: "Flat 102, Shrimad Hall Road, Jetalpur, Vadodara - 390007",
+          deliverySlot: "Aug 09, 11:00 PM",
+          carePreferences: ["Gentle Solvent Clean"],
+          rejectionReason: "High Order Volume - Express 3h slots full for today"
+        }
+      ]),
+      cart: { shopId: null, shopName: '', items: [] }
+    };
+
+    function switchVendorShop(id) { state.activeVendorId = id; render(); }
+
+    function render() {
+      try {
+        const appEl = document.getElementById('app');
+        if (!appEl) return;
+        let html = state.view === 'welcome' ? renderWelcomeView() : renderAppView();
+        appEl.innerHTML = html;
+      } catch (err) {
+        console.error("Render Error Recovered:", err);
+        const appEl = document.getElementById('app');
+        if (appEl) {
+          appEl.innerHTML = `
+            <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; font-family: system-ui, sans-serif; padding: 24px; text-align: center;">
+              <div style="font-size: 3rem; margin-bottom: 12px;">🧺</div>
+              <h2 style="color: #0f172a; margin-bottom: 8px;">LaundryHub Render Recovered</h2>
+              <p style="color: #64748b; max-width: 500px; margin-bottom: 20px; font-size: 0.9rem;">
+                Application state recovered successfully. (${err.message})
+              </p>
+              <div style="display: flex; gap: 12px;">
+                <button onclick="resetDemoDB()" style="background: var(--primary, #1e1b4b); color: white; border: none; padding: 10px 22px; border-radius: 999px; font-weight: 700; cursor: pointer;">
+                  🔄 Reset Application Data
+                </button>
+                <button onclick="state.view='welcome'; state.role='customer'; render();" style="background: #e2e8f0; color: #1e293b; border: none; padding: 10px 22px; border-radius: 999px; font-weight: 600; cursor: pointer;">
+                  🏠 Go to Welcome Screen
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function renderWelcomeView() {
+      return `
+        <div style="min-height: 100vh; background: var(--bg-main); display: flex; flex-direction: column;">
+          <div class="demo-bar">
+            <div>🎬 SHOWCASE DEMO MODE: Test Database Auth & Full Platform Tour</div>
+            <button class="demo-btn-pill" onclick="openDemoModal()">
+              <span>⚡ Open Showcase Demo Menu</span>
+            </button>
+          </div>
+
+          <header style="padding: 18px 36px; background: white; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+            <div class="brand">
+              <div class="brand-icon">🧺</div>
+              <span>LaundryHub</span>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <button class="filter-chip" onclick="openAuth('cust_login')">Customer Log In</button>
+              <button class="view-btn" style="background: var(--accent);" onclick="openAuth('vendor_login')">Provider Log In</button>
+            </div>
+          </header>
+
+          <main style="flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 40px 24px;">
+            <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #0284c7 100%); border-radius: var(--radius-lg); padding: 52px 40px; color: white; text-align: center; margin-bottom: 40px; box-shadow: var(--shadow-lg);">
+              <div style="display: inline-flex; background: rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; margin-bottom: 16px;">
+                ✨ On-Demand Local Laundry & Dry Cleaning Platform
+              </div>
+              <h1 style="font-size: 3.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 16px; color: white;">
+                Fresh Laundry Picked Up & Delivered to Your Door
+              </h1>
+              <p style="font-size: 1.2rem; color: #e0e7ff; max-width: 720px; margin: 0 auto 28px;">
+                Book doorstep wash & fold, steam ironing, and dry cleaning from top local shops — or list your laundry shop to grow orders!
+              </p>
+
+              <div style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px); padding: 14px 20px; border-radius: 999px; display: inline-flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: #fde047;">⚡ Instant Demo Presets:</span>
+                <button onclick="demoPreset('customer')" style="background: white; color: var(--primary); padding: 8px 18px; border-radius: 999px; font-weight: 700;">🛍️ Customer Demo</button>
+                <button onclick="demoPreset('vendor')" style="background: var(--accent); color: white; padding: 8px 18px; border-radius: 999px; font-weight: 700;">🏪 Provider Demo</button>
+                <button onclick="demoPreset('admin')" style="background: #334155; color: white; padding: 8px 18px; border-radius: 999px; font-weight: 700;">🛡️ Admin Demo</button>
+              </div>
+            </div>
+
+            <h2 style="font-size: 1.6rem; text-align: center; margin-bottom: 24px;">Select Account Option to Continue</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 28px; margin-bottom: 40px;">
+              <div style="background: white; border-radius: var(--radius-lg); padding: 32px; border: 2px solid var(--border-light); box-shadow: var(--shadow-md); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 2.5rem; margin-bottom: 12px;">🛍️</div>
+                  <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">For Customers</h3>
+                  <p style="color: var(--text-muted); margin-bottom: 20px;">Book doorstep laundry pickup, select eco-friendly detergents, and track order status live.</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <button class="view-btn" style="padding: 12px;" onclick="openAuth('cust_login')">Log In</button>
+                  <button class="filter-chip" style="padding: 12px; font-weight: 700;" onclick="openAuth('cust_signup')">Sign Up</button>
+                </div>
+              </div>
+
+              <div style="background: white; border-radius: var(--radius-lg); padding: 32px; border: 2px solid var(--border-light); box-shadow: var(--shadow-md); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 2.5rem; margin-bottom: 12px;">🏪</div>
+                  <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">For Laundry Providers</h3>
+                  <p style="color: var(--text-muted); margin-bottom: 20px;">Register your laundry shop business, upload license documents, and manage daily orders.</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <button class="view-btn" style="padding: 12px; background: var(--accent);" onclick="openAuth('vendor_login')">Provider Log In</button>
+                  <button class="filter-chip" style="padding: 12px; font-weight: 700;" onclick="openAuth('vendor_signup')">Register Shop</button>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          ${renderAuthModal()}
+          ${renderDemoModal()}
+        </div>
+      `;
+    }
+
+    function renderAppView() {
+      const customerOrders = state.orders.filter(o => {
+        if (!state.user) return true;
+        const matchEmail = state.user.email && o.customerEmail && o.customerEmail.toLowerCase() === state.user.email.toLowerCase();
+        const matchPhone = state.user.phone && o.customerPhone && o.customerPhone.includes(state.user.phone);
+        const matchName = state.user.name && o.customerName && o.customerName.toLowerCase().includes(state.user.name.toLowerCase());
+        return matchEmail || matchPhone || matchName || !o.customerEmail;
+      });
+
+      const activeOrder = state.orders.find(o => o.id === state.activeTrackerId || o.status !== 'Completed');
+      const cartCount = state.cart.items.reduce((sum, item) => sum + item.qty, 0);
+
+      return `
+        <div class="app-container">
+          <div class="demo-bar">
+            <div>🎬 SHOWCASE DEMO MODE: Complete Admin Control (Requests, Complaints & Delisting)</div>
+            <button class="demo-btn-pill" onclick="openDemoModal()">
+              <span>⚡ Showcase Demo Menu</span>
+            </button>
+          </div>
+
+          <div class="role-banner">
+            <div>
+              <strong>LaundryHub Platform:</strong> ${state.user ? `Logged in as <strong>${state.user.name}</strong> (${state.role.toUpperCase()})` : 'Testing Dashboard'}
+            </div>
+            <div class="role-switcher">
+              <button class="role-btn ${state.role === 'customer' ? 'active' : ''}" onclick="switchRole('customer')">🛍️ Customer View</button>
+              <button class="role-btn ${state.role === 'vendor' ? 'active' : ''}" onclick="switchRole('vendor')">🏪 Provider Portal</button>
+              <button class="role-btn ${state.role === 'admin' ? 'active' : ''}" onclick="switchRole('admin')">🛡️ Admin Panel</button>
+            </div>
+          </div>
+
+          <nav class="navbar">
+            <div class="brand" onclick="goToWelcome()">
+              <div class="brand-icon">🧺</div>
+              <span>LaundryHub</span>
+            </div>
+
+            ${state.role === 'customer' ? `
+              <div class="location-picker" onclick="openCheckout()" style="cursor: pointer;" title="Click to change Vadodara location">
+                📍 <span>Deliver to: <strong style="color: var(--primary);">${(state.userLocation || 'Alkapuri, Vadodara').split(',')[0]}</strong></span>
+              </div>
+            ` : ''}
+
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <button class="filter-chip" onclick="goToWelcome()">🏠 Welcome Page</button>
+              
+              ${state.role === 'customer' ? `
+                <button class="filter-chip" style="background: var(--primary-light); color: var(--primary); font-weight: 700;" onclick="openCustomerOrdersModal()">
+                  📦 My Orders (${customerOrders.length})
+                </button>
+              ` : ''}
+
+              ${state.role === 'customer' && activeOrder ? `
+                <button class="filter-chip active" onclick="openTracker('${activeOrder.id}')">
+                  ⏱️ Track Order #${activeOrder.id} (${activeOrder.status})
+                </button>
+              ` : ''}
+
+              ${state.role === 'customer' ? `
+                <button class="cart-btn" onclick="openCart()">
+                  🛒 Bag (${cartCount})
+                </button>
+              ` : ''}
+
+              ${state.user ? `
+                <button class="filter-chip" onclick="logoutUser()">🔒 Logout</button>
+              ` : ''}
+            </div>
+          </nav>
+
+          <main class="main-content">
+            ${state.role === 'customer' ? renderCustomerView() : ''}
+            ${state.role === 'vendor' ? renderVendorView() : ''}
+            ${state.role === 'admin' ? renderAdminView() : ''}
+          </main>
+
+          ${renderShopModal()}
+          ${renderCartDrawer()}
+          ${renderCheckoutModal()}
+          ${renderTrackerModal()}
+          ${renderDemoModal()}
+          ${renderReviewProviderModal()}
+          ${renderIssueWarningModal()}
+          ${renderVendorSummaryModal()}
+          ${renderVendorRejectModal()}
+          ${renderCustomerOrdersModal()}
+        </div>
+      `;
+    }
+
+    function renderCustomerView() {
+      const activeShops = state.shops.filter(s => s.status !== 'Delisted');
+      const filteredShops = activeShops.filter(shop => {
+        if (state.filter === 'Express 24h') return shop.expressAvailable;
+        if (state.filter === '3h Emergency') return shop.emergencyAvailable;
+        if (state.filter === 'Dry Cleaning') return shop.services.some(s => s.name.toLowerCase().includes('dry clean'));
+        return true;
+      });
+
+      // Collect all available services from active shops
+      const allServices = [];
+      activeShops.forEach(shop => {
+        shop.services.forEach(svc => {
+          allServices.push({
+            ...svc,
+            shopId: shop.id,
+            shopName: shop.name,
+            turnaround: shop.turnaround,
+            expressAvailable: shop.expressAvailable,
+            emergencyAvailable: shop.emergencyAvailable
+          });
+        });
+      });
+
+      // Cart Calculations for Live Bill
+      const cartItems = state.cart.items || [];
+      const cartCount = cartItems.reduce((acc, i) => acc + i.qty, 0);
+      const subtotal = cartItems.reduce((acc, i) => acc + i.price * i.qty, 0);
+      
+      const currentMode = state.cart.deliveryMode || 'standard';
+      const surgeFee = currentMode === 'emergency' ? 99.00 : currentMode === 'express' ? 49.00 : 0;
+      const deliveryFee = 30.00;
+      const serviceFee = 15.00;
+      const grandTotal = subtotal > 0 ? subtotal + deliveryFee + serviceFee + surgeFee : 0;
+
+      const activeAssignedShop = activeShops.find(s => s.id === state.cart.shopId);
+
+      return `
+        <div>
+          <div class="hero-banner">
+            <h1 class="hero-title">On-Demand Laundry, Shoe Care & Instant Order Calculator</h1>
+            <p class="hero-subtitle">Select services directly, toggle 3h emergency rush delivery, and compare matching nearby laundry shops.</p>
+            <div class="search-bar">
+              <input class="search-input" placeholder="Search services (e.g. Shoe Deep Wash, Home Ironing, Wash & Fold)..." />
+              <button class="search-btn">Search</button>
+            </div>
+          </div>
+
+          <div class="filters-row">
+            ${['All', 'Express 24h', '3h Emergency', 'Dry Cleaning'].map(f => `
+              <button class="filter-chip ${state.filter === f ? 'active' : ''}" onclick="setFilter('${f}')">${f}</button>
+            `).join('')}
+          </div>
+
+          <!-- 2-Column Responsive Layout: Services Grid + Live Bill Panel -->
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; align-items: start;">
+            
+            <!-- Left Main Column: Services Catalog + Nearby Shop Matching -->
+            <div>
+              <!-- Direct Selectable Services Section -->
+              <div style="background: white; border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); margin-bottom: 28px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                  <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 800;">🧺 Available Laundry, Shoe & Home Ironing Services</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Select multiple items to build your bag and view live cost breakdown</p>
+                  </div>
+                  <span class="badge badge-approved" style="background: var(--primary-light); color: var(--primary); font-size: 0.8rem;">
+                    ${allServices.length} Services Ready
+                  </span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;">
+                  ${allServices.map(item => {
+                    const qty = getCartItemQty(item.shopId, item.id);
+                    return `
+                      <div style="padding: 16px; border: 2px solid ${qty > 0 ? 'var(--primary)' : 'var(--border-light)'}; background: ${qty > 0 ? 'var(--primary-light)' : 'var(--bg-main)'}; border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: space-between; transition: all 0.15s ease;">
+                        <div>
+                          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                            <span style="font-weight: 700; font-size: 0.95rem;">${item.name}</span>
+                            <span style="font-size: 0.72rem; background: rgba(79, 70, 229, 0.12); color: var(--primary); padding: 2px 8px; border-radius: var(--radius-full); font-weight: 700;">
+                              ${item.shopName}
+                            </span>
+                          </div>
+                          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">${item.desc}</p>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border-light);">
+                          <div style="font-weight: 800; color: var(--primary); font-size: 1.05rem;">
+                            ₹${item.price.toFixed(2)} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">/${item.unit}</span>
+                          </div>
+
+                          ${qty === 0 ? `
+                            <button class="view-btn" style="padding: 6px 14px; font-size: 0.8rem;" onclick="changeCartQty('${item.shopId}', '${item.id}', 1)">
+                              + Add Service
+                            </button>
+                          ` : `
+                            <div class="qty-controls">
+                              <button class="qty-btn" onclick="changeCartQty('${item.shopId}', '${item.id}', -1)">-</button>
+                              <span style="font-weight: 700; min-width: 18px; text-align: center;">${qty}</span>
+                              <button class="qty-btn" onclick="changeCartQty('${item.shopId}', '${item.id}', 1)">+</button>
+                            </div>
+                          `}
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              <!-- Nearby Shops Fulfilling Order Section -->
+              <div style="background: white; border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                  <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 800;">🏪 Nearby Laundry Shops for Your Order</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Compare verified local shops near Alkapuri, Vadodara and choose your preferred provider</p>
+                  </div>
+                  <span class="badge badge-approved" style="background: var(--secondary-light); color: var(--secondary); font-size: 0.8rem;">
+                    ${activeShops.length} Partners Available
+                  </span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                  ${activeShops.map(shop => {
+                    const isAssigned = state.cart.shopId === shop.id;
+                    return `
+                      <div style="border: ${isAssigned ? '2px solid var(--primary)' : '1px solid var(--border-light)'}; background: ${isAssigned ? 'var(--primary-light)' : 'white'}; border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="height: 110px; background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7)), url(${shop.image}); background-size: cover; background-position: center; padding: 10px 14px; display: flex; justify-content: space-between; align-items: flex-start;">
+                          <span class="shop-badge" style="background: rgba(15,23,42,0.85); color: white;">📍 ${shop.distance}</span>
+                          ${shop.emergencyAvailable ? `
+                            <span class="shop-badge" style="background: #b45309; color: white;">⚡ 3h Emergency Ready</span>
+                          ` : `
+                            <span class="shop-badge" style="background: var(--secondary); color: white;">⭐ ${shop.rating}</span>
+                          `}
+                        </div>
+
+                        <div style="padding: 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                          <div>
+                            <h3 style="font-size: 1.05rem; font-weight: 800; margin-bottom: 4px;">${shop.name}</h3>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">📍 ${shop.address}</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px;">
+                              ${shop.tags.map(t => `<span class="tag" style="font-size: 0.7rem;">${t}</span>`).join('')}
+                            </div>
+                          </div>
+
+                          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border-light);">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Turnaround: <strong>${shop.turnaround}</strong></span>
+                            ${isAssigned ? `
+                              <button class="view-btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openCheckout()">✓ Assigned Shop</button>
+                            ` : `
+                              <button class="filter-chip" style="padding: 6px 12px; font-size: 0.8rem;" onclick="assignShopToCart('${shop.id}', '${shop.name}')">Select Shop</button>
+                            `}
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Sticky Column: Live Bill & Subtotal Calculation Panel -->
+            <div style="position: sticky; top: 90px; background: white; border-radius: var(--radius-lg); border: 2px solid var(--primary); box-shadow: var(--shadow-md); padding: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; margin-bottom: 16px;">
+                <div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800;">🧾 Live Bill Calculator</h3>
+                  ${activeAssignedShop ? `
+                    <div style="font-size: 0.8rem; color: var(--primary); font-weight: 700;">🏪 Assigned: ${activeAssignedShop.name}</div>
+                  ` : `
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">Auto-assigned to nearby shop</div>
+                  `}
+                </div>
+                <span class="cart-count" style="width: 26px; height: 26px; font-size: 0.85rem;">${cartCount}</span>
+              </div>
+
+              ${cartItems.length === 0 ? `
+                <div style="text-align: center; padding: 40px 10px; color: var(--text-muted);">
+                  <div style="font-size: 2.8rem; margin-bottom: 8px;">🧺</div>
+                  <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">Your Laundry Bag is Empty</h4>
+                  <p style="font-size: 0.85rem; margin-top: 6px; line-height: 1.4;">
+                    Click <strong>"+ Add Service"</strong> on any service item above to calculate your subtotal & fees live!
+                  </p>
+                </div>
+              ` : `
+                <!-- Selected Items List -->
+                <div style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; padding-right: 4px;">
+                  ${cartItems.map(item => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--bg-main); border-radius: var(--radius-md); border: 1px solid var(--border-light); font-size: 0.85rem;">
+                      <div>
+                        <div style="font-weight: 600;">${item.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">₹${item.price.toFixed(2)} / ${item.unit}</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="qty-controls" style="scale: 0.85;">
+                          <button class="qty-btn" onclick="changeCartQty('${state.cart.shopId}', '${item.id}', -1)">-</button>
+                          <span style="font-weight: 700; min-width: 14px; text-align: center;">${item.qty}</span>
+                          <button class="qty-btn" onclick="changeCartQty('${state.cart.shopId}', '${item.id}', 1)">+</button>
+                        </div>
+                        <span style="font-weight: 800; min-width: 50px; text-align: right;">₹${(item.price * item.qty).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <!-- Delivery Speed / Emergency Mode Selection -->
+                <div style="margin-bottom: 16px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">⚡ Delivery Speed & Surge Option:</div>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${[
+                      { id: 'standard', label: 'Standard Delivery (24-48h)', extra: 0 },
+                      { id: 'express', label: '⚡ Express Delivery (12-24h)', extra: 49.00 },
+                      { id: 'emergency', label: '🚨 Emergency Super Express (3h Rush)', extra: 99.00 }
+                    ].map(mode => {
+                      const isSel = currentMode === mode.id;
+                      return `
+                        <button onclick="setDeliveryMode('${mode.id}')" style="padding: 8px 12px; border-radius: var(--radius-md); font-size: 0.78rem; font-weight: ${isSel ? '700' : '500'}; border: ${isSel ? '2px solid var(--primary)' : '1px solid var(--border-medium)'}; background: ${isSel ? 'var(--primary-light)' : 'white'}; color: ${isSel ? 'var(--primary)' : 'var(--text-main)'}; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                          <span>${mode.label}</span>
+                          <span style="font-weight: 800; color: ${mode.extra > 0 ? '#b45309' : 'var(--secondary)'};">
+                            ${mode.extra > 0 ? `+₹${mode.extra.toFixed(2)}` : 'FREE'}
+                          </span>
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+
+                <!-- Special Care Preferences Selector -->
+                <div style="margin-bottom: 16px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">✨ Care Preferences:</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    ${["Standard Detergent", "Hypoallergenic", "Organic Detergent", "Extra Softener", "Extra Starch"].map(pref => {
+                      const isSel = (state.cart.carePreferences || []).includes(pref);
+                      return `
+                        <button onclick="toggleCarePref('${pref}')" style="padding: 4px 8px; border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 600; border: 1px solid ${isSel ? 'var(--primary)' : 'var(--border-medium)'}; background: ${isSel ? 'var(--primary-light)' : 'white'}; color: ${isSel ? 'var(--primary)' : 'var(--text-muted)'}; cursor: pointer;">
+                          ${isSel ? '✓ ' : ''}${pref}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+
+                <!-- Live Bill Summary Box -->
+                <div style="background: var(--bg-main); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-bottom: 16px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
+                    <span>Items Subtotal</span>
+                    <span style="font-weight: 700;">₹${subtotal.toFixed(2)}</span>
+                  </div>
+                  ${surgeFee > 0 ? `
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; color: #b45309; font-weight: 600;">
+                      <span>Speed Surge (${currentMode.toUpperCase()})</span>
+                      <span>+₹${surgeFee.toFixed(2)}</span>
+                    </div>
+                  ` : ''}
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted);">
+                    <span>Doorstep Pickup & Delivery</span>
+                    <span>₹${deliveryFee.toFixed(2)}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 10px; color: var(--text-muted);">
+                    <span>Service & Platform Fee</span>
+                    <span>₹${serviceFee.toFixed(2)}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 2px dashed var(--border-medium); font-weight: 800; font-size: 1.15rem; color: var(--primary);">
+                    <span>Total Bill</span>
+                    <span>₹${grandTotal.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <button class="view-btn" style="width: 100%; padding: 14px; font-size: 1rem; text-align: center; border-radius: var(--radius-full);" onclick="openCheckout()">
+                  💳 Schedule Pickup (₹${grandTotal.toFixed(2)})
+                </button>
+              `}
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function switchVendorShop(shopId) {
+      state.activeVendorId = shopId;
+      if (state.user) state.user.shopId = shopId;
+      render();
+    }
+
+    function renderVendorView() {
+      if (!state.shops || state.shops.length === 0) {
+        return `<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3>No Laundry Shops Available</h3></div>`;
+      }
+      const activeShopId = (state.user && state.user.shopId) || state.activeVendorId || (state.shops[0] ? state.shops[0].id : 'shop-1');
+      const activeShop = (state.shops || []).find(s => s.id === activeShopId) || state.shops[0];
+      if (!activeShop) {
+        return `<div style="padding: 40px; text-align: center; color: var(--text-muted);"><h3>No Shop Selected</h3></div>`;
+      }
+
+      const warnings = activeShop.warnings || [];
+      const hasWarning = warnings.length > 0;
+      const isVendorUser = state.user && state.role === 'vendor';
+      const shopOrders = (state.orders || []).filter(o => o && o.shopId === activeShop.id);
+
+      const pendingOrders = shopOrders.filter(o => o.status === 'Order Placed');
+      const washingOrders = shopOrders.filter(o => o.status === 'In Washing' || o.status === 'Picked Up');
+      const readyOrders = shopOrders.filter(o => o.status === 'Ready' || o.status === 'Out for Delivery');
+      const completedOrders = shopOrders.filter(o => o.status === 'Completed');
+      const rejectedOrders = shopOrders.filter(o => o.status === 'Rejected');
+
+      const totalRev = completedOrders.concat(washingOrders, readyOrders).reduce((s, o) => s + (o.totalAmount || 0), 0);
+      const totalDecided = shopOrders.length - pendingOrders.length;
+      const acceptanceRate = totalDecided > 0 ? Math.round(((totalDecided - rejectedOrders.length) / totalDecided) * 100) : 100;
+
+      return `
+        <div>
+          ${hasWarning ? `
+            <div style="background: var(--warning-light); border: 2px solid var(--warning); color: #92400e; padding: 16px 20px; border-radius: var(--radius-lg); margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 800; font-size: 1.1rem;">⚠️ OFFICIAL ADMIN WARNING ISSUED (${warnings.length})</div>
+                <span class="badge badge-warning">Action Required</span>
+              </div>
+              <p style="font-size: 0.9rem; margin-top: 6px;">
+                Latest Note from Platform Admin: <strong>"${warnings[warnings.length - 1]?.reason || 'Warning issued'}"</strong>
+              </p>
+              <div style="font-size: 0.75rem; color: #b45309; margin-top: 4px;">
+                Date Issued: ${warnings[warnings.length - 1]?.date || 'Today'}.
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">🏪 ${activeShop.name} Portal</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Owner: ${activeShop.ownerName} | Address: ${activeShop.address}</p>
+            </div>
+            ${isVendorUser ? `
+              <div style="background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 8px 16px; border-radius: var(--radius-full); font-size: 0.85rem; border: 1px solid var(--primary); display: flex; align-items: center; gap: 6px;">
+                🔒 Logged in Store: <strong>${activeShop.name}</strong>
+              </div>
+            ` : `
+              <select onchange="switchVendorShop(this.value)" style="padding: 10px 16px; border-radius: var(--radius-full); font-weight: 700; border: 1px solid var(--primary); color: var(--primary);">
+                ${state.shops.map(s => `<option value="${s.id}" ${s.id === activeShop.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+              </select>
+            `}
+          </div>
+
+          <!-- INCOMING REQUEST ALERT BANNER -->
+          ${pendingOrders.length > 0 ? `
+            <div style="background: linear-gradient(135deg, #fffbe6 0%, #fef3c7 100%); border: 2px solid #f59e0b; padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 28px; box-shadow: 0 4px 16px rgba(245,158,11,0.25);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                  <div style="width: 44px; height: 44px; border-radius: 50%; background: #f59e0b; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                    🔔
+                  </div>
+                  <div>
+                    <h3 style="font-size: 1.25rem; color: #92400e; margin: 0; display: flex; align-items: center; gap: 8px;">
+                      🚨 ${pendingOrders.length} New Incoming Service Request${pendingOrders.length > 1 ? 's' : ''} Waiting!
+                      <span class="badge badge-warning" style="background: #d97706; color: white;">PULSE ALERT</span>
+                    </h3>
+                    <p style="font-size: 0.85rem; color: #b45309; margin-top: 2px;">
+                      New customer requests are waiting for your approval. Click Accept or Reject below to confirm slot.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Metrics Row -->
+          <div class="stats-grid" style="margin-bottom: 28px;">
+            <div class="stat-card">
+              <div>
+                <div class="stat-val" style="color: #b45309;">${pendingOrders.length}</div>
+                <div class="stat-lbl">📥 Incoming Requests</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">₹${totalRev.toFixed(2)}</div>
+                <div class="stat-lbl">Today's Revenue</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">${washingOrders.length + readyOrders.length}</div>
+                <div class="stat-lbl">Active In-Wash Jobs</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">${acceptanceRate}%</div>
+                <div class="stat-lbl">Acceptance Rate</div>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-bottom: 16px; font-size: 1.25rem;">Live Order Operations Pipeline</h3>
+          <div class="orders-board">
+            <!-- 1. INCOMING REQUESTS -->
+            <div class="board-col">
+              <h4 style="font-size: 0.95rem; color: #b45309; display: flex; justify-content: space-between; align-items: center;">
+                <span>📥 Incoming Requests (${pendingOrders.length})</span>
+                ${pendingOrders.length > 0 ? '<span style="font-size: 0.65rem; background: #f59e0b; color: white; padding: 2px 6px; border-radius: 999px;">PULSE</span>' : ''}
+              </h4>
+              ${pendingOrders.length === 0 ? `
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 24px; background: white; border-radius: var(--radius-md);">
+                  No new pending requests
+                </div>
+              ` : pendingOrders.map(ord => `
+                <div class="order-card" style="border-left: 4px solid #f59e0b; background: #fffbeb; padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px; box-shadow: var(--shadow-sm);">
+                  <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--primary);">
+                    <span>#${ord.id}</span>
+                    <span class="badge badge-warning">NEW REQUEST</span>
+                  </div>
+                  <div style="font-weight: 700; margin-top: 4px; font-size: 0.95rem;">${ord.customerName}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">📞 ${ord.customerPhone}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">📍 ${ord.pickupAddress}</div>
+                  
+                  ${ord.deliveryMode === 'emergency' ? `
+                    <div style="margin-top: 6px; font-size: 0.72rem; background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: var(--radius-full); font-weight: 800; display: inline-block;">
+                      🚨 Emergency 3h Rush
+                    </div>
+                  ` : ''}
+
+                  <div style="margin-top: 8px; font-size: 0.8rem; background: white; padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid #fde68a;">
+                    ${(ord.items || []).map(i => `<div>• ${i.name} (x${i.qty} ${i.unit})</div>`).join('')}
+                  </div>
+
+                  <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 800; color: var(--primary);">₹${(ord.totalAmount || 0).toFixed(2)}</span>
+                    <button class="filter-chip" style="padding: 3px 8px; font-size: 0.72rem;" onclick="openVendorSummaryModal('${ord.id}')">
+                      📋 Summary
+                    </button>
+                  </div>
+
+                  <!-- ACCEPT & REJECT BUTTONS -->
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                    <button class="filter-chip" style="color: var(--danger); border-color: var(--danger-light); background: var(--danger-light); font-weight: 700; padding: 6px; font-size: 0.78rem;" onclick="openVendorRejectModal('${ord.id}')">
+                      ❌ Reject
+                    </button>
+                    <button class="view-btn" style="background: var(--secondary); color: white; font-weight: 700; padding: 6px; font-size: 0.78rem;" onclick="acceptVendorOrder('${ord.id}')">
+                      ✅ Accept
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- 2. IN WASHING -->
+            <div class="board-col">
+              <h4 style="font-size: 0.95rem; color: var(--primary);">🫧 In Wash & Care (${washingOrders.length})</h4>
+              ${washingOrders.length === 0 ? `
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 24px; background: white; border-radius: var(--radius-md);">
+                  No active washing jobs
+                </div>
+              ` : washingOrders.map(ord => `
+                <div class="order-card" style="border-left: 4px solid var(--primary); padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px; background: white; box-shadow: var(--shadow-sm);">
+                  <div style="display: flex; justify-content: space-between; font-weight: 800; color: var(--primary);">
+                    <span>#${ord.id}</span>
+                    <span class="badge badge-processing">${ord.status}</span>
+                  </div>
+                  <div style="font-weight: 700; margin-top: 4px;">${ord.customerName}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">📍 ${ord.pickupAddress}</div>
+                  <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 800;">₹${(ord.totalAmount || 0).toFixed(2)}</span>
+                    <div style="display: flex; gap: 4px;">
+                      <button class="filter-chip" style="padding: 3px 6px; font-size: 0.72rem;" onclick="openVendorSummaryModal('${ord.id}')">📋</button>
+                      <button class="view-btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="advanceOrder('${ord.id}', 'In Washing')">
+                        Ready ➔
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- 3. READY FOR DELIVERY -->
+            <div class="board-col">
+              <h4 style="font-size: 0.95rem; color: #0369a1;">🚚 Ready / Delivery (${readyOrders.length})</h4>
+              ${readyOrders.length === 0 ? `
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 24px; background: white; border-radius: var(--radius-md);">
+                  No orders ready for pickup
+                </div>
+              ` : readyOrders.map(ord => `
+                <div class="order-card" style="border-left: 4px solid #0369a1; padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px; background: white; box-shadow: var(--shadow-sm);">
+                  <div style="display: flex; justify-content: space-between; font-weight: 800; color: #0369a1;">
+                    <span>#${ord.id}</span>
+                    <span class="badge badge-pending">${ord.status}</span>
+                  </div>
+                  <div style="font-weight: 700; margin-top: 4px;">${ord.customerName}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">📍 ${ord.pickupAddress}</div>
+                  <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 800;">₹${(ord.totalAmount || 0).toFixed(2)}</span>
+                    <button class="view-btn" style="padding: 4px 10px; font-size: 0.75rem; background: var(--secondary);" onclick="advanceOrder('${ord.id}', 'Ready')">
+                      Complete ➔
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- 4. COMPLETED & REJECTED LOGS -->
+            <div class="board-col">
+              <h4 style="font-size: 0.95rem; color: var(--secondary);">✅ Completed & Logs (${completedOrders.length + rejectedOrders.length})</h4>
+              ${completedOrders.concat(rejectedOrders).map(ord => `
+                <div class="order-card" style="border-left: 4px solid ${ord.status === 'Rejected' ? '#ef4444' : 'var(--secondary)'}; padding: 12px; border-radius: var(--radius-md); margin-bottom: 10px; background: white; opacity: 0.9;">
+                  <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                    <span>#${ord.id}</span>
+                    <span class="badge ${ord.status === 'Rejected' ? 'badge-rejected' : 'badge-completed'}">${ord.status}</span>
+                  </div>
+                  <div style="font-weight: 600; font-size: 0.85rem; margin-top: 2px;">${ord.customerName}</div>
+                  ${ord.rejectionReason ? `
+                    <div style="font-size: 0.72rem; color: var(--danger); margin-top: 4px;">Reason: ${ord.rejectionReason}</div>
+                  ` : ''}
+                  <div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+                    <span style="font-weight: 800;">₹${(ord.totalAmount || 0).toFixed(2)}</span>
+                    <button class="filter-chip" style="padding: 2px 8px; font-size: 0.72rem;" onclick="openVendorSummaryModal('${ord.id}')">View</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ADMIN PANEL WITH ALL 3 SECTIONS: 
+    // 1. PENDING PROVIDER ONBOARDING REQUESTS QUEUE
+    // 2. CUSTOMER COMPLAINTS & FEEDBACK MODERATION FEED
+    // 3. ACTIVE PUBLISHED LAUNDRY SHOPS TABLE
+    function renderAdminView() {
+      const gmv = state.orders.reduce((s, o) => s + o.totalAmount, 0);
+
+      return `
+        <div>
+          <!-- Admin Banner Header -->
+          <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white; padding: 24px; border-radius: var(--radius-lg); margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 style="font-size: 1.6rem; color: white;">🛡️ Platform Super Admin Control Center</h1>
+              <p style="color: #c7d2fe; font-size: 0.9rem; margin-top: 2px;">Review onboarding requests, inspect license documents, moderate complaints & delist shops</p>
+            </div>
+            <span class="badge badge-completed" style="padding: 6px 14px;">Super Admin Access</span>
+          </div>
+
+          <!-- Top Metrics -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">₹${gmv.toFixed(2)}</div>
+                <div class="stat-lbl">Total Marketplace GMV</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">${state.pendingProviders.length} Pending</div>
+                <div class="stat-lbl">Provider Signup Requests</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">${state.complaints.length} Open</div>
+                <div class="stat-lbl">Customer Complaints Submitted</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div>
+                <div class="stat-val">${state.shops.length} Active</div>
+                <div class="stat-lbl">Published Laundry Partners</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 1: PENDING PROVIDER ONBOARDING REQUESTS SECTION -->
+          <div style="background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-light); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 32px;">
+            <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-light); background: #fef3c7; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="font-size: 1.1rem; color: #b45309;">📋 SECTION 1: Provider Onboarding Requests Queue (${state.pendingProviders.length})</h3>
+                <p style="font-size: 0.8rem; color: #92400e;">Review submitted business licenses, tax IDs, and owner identity proof before accepting or rejecting</p>
+              </div>
+              <span class="badge badge-pending">${state.pendingProviders.length} Applications</span>
+            </div>
+
+            ${state.pendingProviders.length === 0 ? `
+              <div style="padding: 32px; text-align: center; color: var(--text-muted);">
+                <h4>No Pending Provider Signup Requests</h4>
+                <p style="font-size: 0.85rem;">All shop onboarding applications have been processed.</p>
+              </div>
+            ` : `
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+                  <thead>
+                    <tr style="background: var(--bg-main); border-bottom: 1px solid var(--border-medium); color: var(--text-muted);">
+                      <th style="padding: 12px 18px;">Shop Name & Location</th>
+                      <th style="padding: 12px 18px;">Owner Name & Contact</th>
+                      <th style="padding: 12px 18px;">Business License & Tax ID</th>
+                      <th style="padding: 12px 18px;">Verification Status</th>
+                      <th style="padding: 12px 18px; text-align: right;">Review & Onboarding Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${state.pendingProviders.map(req => `
+                      <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 14px 18px;">
+                          <div style="font-weight: 700; color: var(--primary);">${req.shopName}</div>
+                          <div style="font-size: 0.75rem; color: var(--text-muted);">${req.address}</div>
+                        </td>
+                        <td style="padding: 14px 18px;">
+                          <div><strong>${req.ownerName}</strong></div>
+                          <div style="font-size: 0.75rem; color: var(--text-muted);">${req.phone}</div>
+                        </td>
+                        <td style="padding: 14px 18px;">
+                          <div style="font-family: monospace; font-weight: 600; color: #1e293b;">📄 ${req.businessLicenseNo}</div>
+                          <div style="font-size: 0.75rem; color: var(--text-muted);">Tax: ${req.taxIdNo || 'TAX-9984102-TX'}</div>
+                        </td>
+                        <td style="padding: 14px 18px;">
+                          <span class="badge badge-completed">${req.idProofStatus || 'Govt Photo ID Uploaded'}</span>
+                        </td>
+                        <td style="padding: 14px 18px; text-align: right;">
+                          <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                            <button class="filter-chip" style="padding: 6px 12px; font-size: 0.75rem;" onclick="openReviewModal('${req.id}')">
+                              🔍 Review Details
+                            </button>
+                            <button class="view-btn" style="padding: 6px 12px; font-size: 0.75rem; background: var(--secondary);" onclick="acceptProvider('${req.id}')">
+                              ✅ Accept Request
+                            </button>
+                            <button class="filter-chip" style="padding: 6px 12px; font-size: 0.75rem; color: var(--danger); border-color: var(--danger-light); background: var(--danger-light);" onclick="removeProvider('${req.id}')">
+                              ❌ Remove Request
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `}
+          </div>
+
+          <!-- SECTION 2: CUSTOMER COMPLAINTS & FEEDBACK MODERATION FEED -->
+          <div style="background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-light); overflow: hidden; box-shadow: var(--shadow-sm); margin-bottom: 32px;">
+            <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-light); background: #fee2e2; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="font-size: 1.1rem; color: #991b1b;">📢 SECTION 2: Customer Complaints & Review Reports (${state.complaints.length})</h3>
+                <p style="font-size: 0.8rem; color: #7f1d1d;">Review negative customer feedback and issue warnings or delist providers</p>
+              </div>
+              <span class="badge badge-rejected">${state.complaints.length} Reports</span>
+            </div>
+
+            ${state.complaints.length === 0 ? `
+              <div style="padding: 30px; text-align: center; color: var(--text-muted);">
+                <h4>No Open Customer Complaints</h4>
+                <p style="font-size: 0.85rem;">All customer feedback has been addressed and resolved.</p>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column;">
+                ${state.complaints.map(cmp => `
+                  <div style="padding: 20px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                        <span style="font-weight: 800; color: var(--primary);">${cmp.customerName}</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">on Order #${cmp.orderId}</span>
+                        <span style="color: #f59e0b; font-weight: 700;">⭐ ${cmp.rating} / 5</span>
+                        <span class="badge badge-pending">${cmp.status}</span>
+                      </div>
+
+                      <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px;">
+                        "${cmp.text}"
+                      </div>
+
+                      <div style="font-size: 0.8rem; color: var(--text-muted);">
+                        Reported against provider: <strong>${cmp.shopName}</strong> | Date: ${cmp.date}
+                      </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                      <button class="filter-chip" style="padding: 8px 14px; font-size: 0.8rem; color: #b45309; border-color: #f59e0b; background: var(--warning-light);" onclick="issueWarningFromComplaint('${cmp.shopId}', '${cmp.text.replace(/'/g, "\\'")}')">
+                        ⚠️ Issue Warning to Provider
+                      </button>
+                      <button class="filter-chip" style="padding: 8px 14px; font-size: 0.8rem; color: var(--danger); border-color: var(--danger-light); background: var(--danger-light);" onclick="delistActiveShop('${cmp.shopId}')">
+                        🗑️ Remove Provider Shop
+                      </button>
+                      <button class="view-btn" style="padding: 8px 14px; font-size: 0.8rem; background: var(--secondary);" onclick="resolveComplaint('${cmp.id}')">
+                        ✅ Resolve
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+
+          <!-- SECTION 3: ACTIVE PUBLISHED LAUNDRY SHOPS TABLE -->
+          <div style="background: white; padding: 24px; border-radius: var(--radius-lg); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 1.2rem;">🏪 SECTION 3: Active Published Laundry Shop Partners (${state.shops.length})</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Issue official warnings to providers or delist/remove active shops from the platform</p>
+              </div>
+              <span class="badge badge-completed">${state.shops.length} Live Shops</span>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;">
+                <thead>
+                  <tr style="background: var(--bg-main); border-bottom: 1px solid var(--border-medium); color: var(--text-muted);">
+                    <th style="padding: 12px 18px;">Shop Name & Address</th>
+                    <th style="padding: 12px 18px;">Owner & Contact</th>
+                    <th style="padding: 12px 18px;">Rating</th>
+                    <th style="padding: 12px 18px;">Warnings Status</th>
+                    <th style="padding: 12px 18px; text-align: right;">Admin Control Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${state.shops.map(shop => {
+                    const warningCount = shop.warnings ? shop.warnings.length : 0;
+                    const isDelisted = shop.status === 'Delisted';
+
+                    return `
+                      <tr style="border-bottom: 1px solid var(--border-light); opacity: ${isDelisted ? '0.6' : '1'};">
+                        <td style="padding: 14px 18px;">
+                          <div style="font-weight: 700; font-size: 0.95rem;">${shop.name}</div>
+                          <div style="font-size: 0.75rem; color: var(--text-muted);">${shop.address}</div>
+                        </td>
+                        <td style="padding: 14px 18px;">
+                          <div>${shop.ownerName}</div>
+                          <div style="font-size: 0.75rem; color: var(--text-muted);">${shop.phone || '+1 (555) 234-5678'}</div>
+                        </td>
+                        <td style="padding: 14px 18px;">
+                          ⭐ <strong>${shop.rating}</strong> (${shop.reviewsCount} reviews)
+                        </td>
+                        <td style="padding: 14px 18px;">
+                          ${warningCount > 0 ? `
+                            <span class="badge badge-warning">⚠️ ${warningCount} Warning${warningCount > 1 ? 's' : ''}</span>
+                          ` : `
+                            <span class="badge badge-completed">Clean Record</span>
+                          `}
+                        </td>
+                        <td style="padding: 14px 18px; text-align: right;">
+                          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            ${!isDelisted ? `
+                              <button class="filter-chip" style="padding: 6px 12px; font-size: 0.75rem; color: #b45309; border-color: #f59e0b; background: var(--warning-light);" onclick="openWarningModal('${shop.id}')">
+                                ⚠️ Issue Warning
+                              </button>
+                              <button class="filter-chip" style="padding: 6px 12px; font-size: 0.75rem; color: var(--danger); border-color: var(--danger-light); background: var(--danger-light);" onclick="delistActiveShop('${shop.id}')">
+                                🗑️ Remove / Delist
+                              </button>
+                            ` : `
+                              <button class="view-btn" style="padding: 6px 12px; font-size: 0.75rem; background: var(--secondary);" onclick="relistShop('${shop.id}')">
+                                🔄 Restore / Relist
+                              </button>
+                            `}
+                          </div>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ISSUE WARNING MODAL
+    function renderIssueWarningModal() {
+      if (!state.warningModalShopId) return '';
+      const shop = state.shops.find(s => s.id === state.warningModalShopId);
+      if (!shop) return '';
+
+      return `
+        <div class="modal-overlay" onclick="closeWarningModal()">
+          <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #b45309 0%, #d97706 100%); color: white;">
+              <div>
+                <h3 style="color: white;">⚠️ Issue Official Warning to Provider</h3>
+                <p style="font-size: 0.8rem; color: #fef3c7;">Shop: ${shop.name} (Owner: ${shop.ownerName})</p>
+              </div>
+              <button class="close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeWarningModal()">✕</button>
+            </div>
+
+            <form onsubmit="submitIssueWarning(event, '${shop.id}')" style="padding: 24px;">
+              <div style="margin-bottom: 16px;">
+                <label style="font-size: 0.8rem; color: var(--text-muted);">Select Warning Reason Category</label>
+                <select id="warningReasonSelect" style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px; font-size: 0.85rem;">
+                  <option>Customer Complaint: Delayed delivery & timing issue</option>
+                  <option>Customer Complaint: Fabric damage or missing garment</option>
+                  <option>Customer Complaint: Incorrect detergent or care preference</option>
+                  <option>Pricing mismatch / unauthorized extra charges</option>
+                  <option>Custom Warning Reason</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <label style="font-size: 0.8rem; color: var(--text-muted);">Customer Complaint Note & Corrective Action Required</label>
+                <textarea id="warningDetailInput" rows="3" required style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px; font-size: 0.85rem;">${state.warningDefaultText || ''}</textarea>
+              </div>
+
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="filter-chip" onclick="closeWarningModal()">Cancel</button>
+                <button type="submit" class="view-btn" style="background: var(--warning); color: #0f172a; padding: 10px 20px;">
+                  ⚠️ Send Warning Notice
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReviewProviderModal() {
+      if (!state.reviewProviderModalId) return '';
+      const req = state.pendingProviders.find(p => p.id === state.reviewProviderModalId);
+      if (!req) return '';
+
+      return `
+        <div class="modal-overlay" onclick="closeReviewModal()">
+          <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white;">
+              <div>
+                <h3 style="color: white;">📋 Provider Verification & License Review</h3>
+                <p style="font-size: 0.8rem; color: #c7d2fe;">Submitted Documents & Business Identity Proof</p>
+              </div>
+              <button class="close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeReviewModal()">✕</button>
+            </div>
+
+            <div style="padding: 24px;">
+              <div style="background: var(--primary-light); padding: 14px; border-radius: var(--radius-md); border: 1px solid #c7d2fe; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h4 style="font-size: 1.1rem; color: var(--primary);">${req.shopName}</h4>
+                  <div style="font-size: 0.85rem; color: var(--text-muted);">Owner: <strong>${req.ownerName}</strong> | Applied: ${req.appliedDate}</div>
+                </div>
+                <span class="badge badge-pending">${req.status}</span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div style="background: var(--bg-main); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">BUSINESS LICENSE NO.</div>
+                  <div style="font-family: monospace; font-weight: 800; color: var(--primary); font-size: 0.95rem; margin-top: 2px;">📄 ${req.businessLicenseNo}</div>
+                </div>
+                <div style="background: var(--bg-main); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">OWNER IDENTITY PROOF</div>
+                  <div style="font-weight: 700; font-size: 0.85rem; margin-top: 2px;">🪪 ${req.idProofStatus || 'Govt Photo ID Uploaded'}</div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid var(--border-light); padding-top: 16px;">
+                <button class="view-btn" style="padding: 12px; background: var(--secondary);" onclick="acceptProvider('${req.id}')">
+                  ✅ Accept & Publish Laundry Shop
+                </button>
+                <button class="filter-chip" style="padding: 12px; color: var(--danger); border-color: var(--danger); background: var(--danger-light); font-weight: 700;" onclick="removeProvider('${req.id}')">
+                  ❌ Remove / Reject Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAuthModal() {
+      if (state.authTab === 'none') return '';
+      const isCust = state.authTab.startsWith('cust');
+
+      return `
+        <div class="modal-overlay" onclick="closeAuth()">
+          <div class="modal-content" style="max-width: 480px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+              <h3>${isCust ? 'Customer Database Portal' : 'Laundry Provider Portal'}</h3>
+              <button class="close-btn" onclick="closeAuth()">✕</button>
+            </div>
+            <div style="padding: 24px;">
+              ${state.authErrorMsg ? `
+                <div style="background: var(--danger-light); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 16px; font-weight: 600;">
+                  ⚠️ ${state.authErrorMsg}
+                </div>
+              ` : ''}
+
+              <div style="display: flex; background: var(--bg-main); padding: 4px; border-radius: 999px; margin-bottom: 16px;">
+                <button style="flex: 1; padding: 8px; border-radius: 999px; font-weight: 700; background: ${state.authTab.endsWith('login') ? 'white' : 'transparent'}" onclick="setAuthTab('${isCust ? 'cust_login' : 'vendor_login'}')">Log In</button>
+                <button style="flex: 1; padding: 8px; border-radius: 999px; font-weight: 700; background: ${state.authTab.endsWith('signup') ? 'white' : 'transparent'}" onclick="setAuthTab('${isCust ? 'cust_signup' : 'vendor_signup'}')">${isCust ? 'Sign Up' : 'Register Shop'}</button>
+              </div>
+
+              <form onsubmit="submitDatabaseAuth(event, '${isCust ? 'customer' : 'vendor'}', '${state.authTab.endsWith('signup') ? 'signup' : 'login'}')">
+                ${state.authTab.endsWith('signup') ? `
+                  <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.8rem; color: var(--text-muted);">${isCust ? 'Full Name' : 'Laundry Shop Name'}</label>
+                    <input required style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px;" placeholder="${isCust ? 'Sarah Jenkins' : 'Sparkle & Spin Laundry'}" id="authNameInput" />
+                  </div>
+                ` : ''}
+                <div style="margin-bottom: 12px;">
+                  <label style="font-size: 0.8rem; color: var(--text-muted);">${isCust ? 'Email or Phone' : 'Business Email or Phone'}</label>
+                  <input required style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px;" placeholder="${isCust ? 'sarah@example.com' : 'marcus@sparklespin.com'}" id="authEmailInput" />
+                </div>
+                <div style="margin-bottom: 18px;">
+                  <label style="font-size: 0.8rem; color: var(--text-muted);">Password</label>
+                  <input type="password" required style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px;" placeholder="123" id="authPassInput" />
+                </div>
+                <button class="view-btn" style="width: 100%; padding: 12px; ${isCust ? '' : 'background: var(--accent);'}" type="submit">
+                  ${state.authTab.endsWith('login') ? 'Log In' : 'Create & Save to Database'}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDemoModal() {
+      if (!state.isDemoModalOpen) return '';
+
+      return `
+        <div class="modal-overlay" onclick="closeDemoModal()">
+          <div class="modal-content" style="max-width: 540px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white;">
+              <div>
+                <h3 style="color: white; font-size: 1.3rem;">🎬 Showcase Presentation Menu</h3>
+                <p style="font-size: 0.8rem; color: #c7d2fe;">Select a preset scenario to present to clients or stakeholders</p>
+              </div>
+              <button class="close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeDemoModal()">✕</button>
+            </div>
+            <div style="padding: 24px;">
+              <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+                <div style="padding: 16px; border: 2px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="demoPreset('customer')">
+                  <div>
+                    <h4 style="font-weight: 700;">🛍️ 1. Customer Booking Tour</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Logs in as Sarah, views nearby shops, cart drawer & live order tracker</p>
+                  </div>
+                  <button class="view-btn" style="padding: 6px 14px; font-size: 0.8rem;">Launch Tour ➔</button>
+                </div>
+
+                <div style="padding: 16px; border: 2px solid var(--primary); background: var(--primary-light); border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="demoPreset('jadav')">
+                  <div>
+                    <h4 style="font-weight: 800; color: var(--primary);">🧺 Jadav Shop Provider Portal</h4>
+                    <p style="font-size: 0.8rem; color: var(--primary);">Log in directly as Jadav Laundry Provider to manage incoming requests & accept/decline jobs</p>
+                  </div>
+                  <button class="view-btn" style="padding: 6px 14px; font-size: 0.8rem; background: var(--primary);">Log In as Jadav ➔</button>
+                </div>
+
+                <div style="padding: 16px; border: 2px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="demoPreset('vendor')">
+                  <div>
+                    <h4 style="font-weight: 700;">🏪 Provider Operations Tour</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Displays provider order pipeline & incoming request alerts</p>
+                  </div>
+                  <button class="view-btn" style="padding: 6px 14px; font-size: 0.8rem; background: var(--accent);">Launch Tour ➔</button>
+                </div>
+
+                <div style="padding: 16px; border: 2px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="demoPreset('admin')">
+                  <div>
+                    <h4 style="font-weight: 700;">🛡️ 3. Admin Control (Requests, Complaints & Delisting)</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Review onboarding requests, customer complaints & delist providers</p>
+                  </div>
+                  <button class="view-btn" style="padding: 6px 14px; font-size: 0.8rem; background: #334155;">Launch Tour ➔</button>
+                </div>
+              </div>
+
+              <div style="text-align: center; border-top: 1px solid var(--border-light); padding-top: 16px;">
+                <button class="filter-chip" style="color: var(--danger); border-color: var(--danger-light); background: var(--danger-light);" onclick="resetDemoDB()">
+                  🔄 Reset Database to Initial Sample State
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderShopModal() {
+      if (!state.activeShopModal) return '';
+      const shop = state.shops.find(s => s.id === state.activeShopModal);
+      if (!shop) return '';
+
+      return `
+        <div class="modal-overlay" onclick="closeShopModal()">
+          <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+              <div>
+                <h2>${shop.name}</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">📍 ${shop.address}</p>
+              </div>
+              <button class="close-btn" onclick="closeShopModal()">✕</button>
+            </div>
+            <div style="padding: 24px;">
+              <h3>Services Menu</h3>
+              ${shop.services.map(svc => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-light);">
+                  <div>
+                    <div style="font-weight: 700;">${svc.name}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${svc.desc}</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-weight: 800; color: var(--primary);">₹${svc.price.toFixed(2)} / ${svc.unit}</span>
+                    <button class="view-btn" onclick="addToCart('${shop.id}', '${svc.id}')">+ Add</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCartDrawer() {
+      if (!state.isCartOpen) return '';
+      const total = state.cart.items.reduce((s, i) => s + i.price * i.qty, 0);
+
+      return `
+        <div class="modal-overlay" onclick="closeCart()">
+          <div class="modal-content" style="max-width: 420px; margin-left: auto; height: 100vh; border-radius: 0;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+              <h3>Your Laundry Bag</h3>
+              <button class="close-btn" onclick="closeCart()">✕</button>
+            </div>
+            <div style="padding: 20px; flex: 1;">
+              ${state.cart.items.length === 0 ? '<p>Your bag is empty.</p>' : state.cart.items.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light);">
+                  <div>${item.name} x ${item.qty}</div>
+                  <div><strong>₹${(item.price * item.qty).toFixed(2)}</strong></div>
+                </div>
+              `).join('')}
+              ${state.cart.items.length > 0 ? `
+                <div style="margin-top: 20px; border-top: 2px solid var(--border-medium); padding-top: 12px;">
+                  <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem;">
+                    <span>Total:</span>
+                    <span style="color: var(--primary);">₹${(total + 45.00).toFixed(2)}</span>
+                  </div>
+                  <button class="view-btn" style="width: 100%; margin-top: 16px; padding: 12px;" onclick="closeCart(); openCheckout();">
+                    Checkout & Schedule Pickup
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function detectGPSLocation() {
+      const input = document.getElementById('checkout-address');
+      if (!input) return;
+      input.value = "Flat 302, Royal Residency, Alkapuri, Vadodara - 390007 (GPS Verified)";
+      updateCheckoutProviders(input.value);
+    }
+
+    function refreshProviderList() {
+      const input = document.getElementById('checkout-address');
+      const val = input ? input.value : 'Alkapuri, Vadodara';
+      const container = document.getElementById('checkout-providers-list');
+      if (container) {
+        container.style.opacity = '0.4';
+        setTimeout(() => {
+          container.style.opacity = '1';
+          updateCheckoutProviders(val);
+        }, 300);
+      }
+    }
+
+    function updateCheckoutProviders(val) {
+      if (val) {
+        state.userLocation = val;
+        saveDB('userLocation', val);
+      }
+      const userAddr = (val || '').toLowerCase();
+      const shopContainer = document.getElementById('checkout-providers-list');
+      if (!shopContainer) return;
+
+      const activeShops = state.shops.filter(s => s.status !== 'Delisted');
+
+      const getDynamicDistance = (shopAddress) => {
+        const shopAddr = (shopAddress || '').toLowerCase();
+        if (userAddr.includes('bhayli')) {
+          if (shopAddr.includes('bhayli') || shopAddr.includes('vasna')) return '0.3 km away (Nearest)';
+          if (shopAddr.includes('gotri')) return '0.9 km away';
+          if (shopAddr.includes('akota')) return '1.4 km away';
+          if (shopAddr.includes('op road')) return '1.8 km away';
+          return '2.4 km away';
+        }
+        if (userAddr.includes('akota') && shopAddr.includes('akota')) return '0.3 km away (Nearest)';
+        if (userAddr.includes('alkapuri') && shopAddr.includes('alkapuri')) return '0.4 km away (Nearest)';
+        if (userAddr.includes('fatehgunj') && shopAddr.includes('fatehgunj')) return '0.4 km away (Nearest)';
+        if (userAddr.includes('manjalpur') && shopAddr.includes('manjalpur')) return '0.4 km away (Nearest)';
+        if (userAddr.includes('karelibaug') && shopAddr.includes('karelibaug')) return '0.5 km away (Nearest)';
+        if (userAddr.includes('gotri') && shopAddr.includes('gotri')) return '0.4 km away (Nearest)';
+        if (userAddr.includes('sayajigunj') && shopAddr.includes('sayajigunj')) return '0.3 km away (Nearest)';
+        if ((userAddr.includes('op road') || userAddr.includes('old padra')) && (shopAddr.includes('op road') || shopAddr.includes('old padra'))) return '0.4 km away (Nearest)';
+        if (userAddr.includes('waghodia') && shopAddr.includes('waghodia')) return '0.5 km away (Nearest)';
+        if ((userAddr.includes('subhanpura') || userAddr.includes('ellora')) && (shopAddr.includes('subhanpura') || shopAddr.includes('ellora'))) return '0.3 km away (Nearest)';
+        if (userAddr.includes('vasna') && shopAddr.includes('vasna')) return '0.4 km away (Nearest)';
+        if (userAddr.includes('gorwa') && shopAddr.includes('gorwa')) return '0.5 km away (Nearest)';
+        if (userAddr.includes('makarpura') && shopAddr.includes('makarpura')) return '0.6 km away (Nearest)';
+        if (userAddr.includes('tarsali') && shopAddr.includes('tarsali')) return '0.5 km away (Nearest)';
+        if (userAddr.includes('chhani') && shopAddr.includes('chhani')) return '0.4 km away (Nearest)';
+        if (userAddr.includes('sama') && shopAddr.includes('sama')) return '0.3 km away (Nearest)';
+        if (userAddr.includes('nizampura') && shopAddr.includes('nizampura')) return '0.4 km away (Nearest)';
+        return '1.1 km away';
+      };
+
+      const sorted = [...activeShops].sort((a, b) => {
+        const distA = getDynamicDistance(a.address);
+        const distB = getDynamicDistance(b.address);
+        return distA.includes('(Nearest)') ? -1 : distB.includes('(Nearest)') ? 1 : 0;
+      });
+
+      shopContainer.innerHTML = sorted.map((shop, idx) => {
+        const dynamicDist = getDynamicDistance(shop.address);
+        const isClosest = dynamicDist.includes('(Nearest)');
+        return `
+          <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: var(--radius-md); border: ${idx === 0 ? '2px solid var(--primary)' : '1px solid var(--border-medium)'}; background: ${idx === 0 ? 'var(--primary-light)' : 'white'}; cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" name="selectedProvider" value="${shop.id}" ${idx === 0 ? 'checked' : ''} />
+              <div>
+                <div style="font-weight: 700; font-size: 0.9rem;">
+                  ${shop.name} ${isClosest ? '<span style="font-size: 0.68rem; background: var(--secondary-light); color: var(--secondary); padding: 1px 6px; border-radius: var(--radius-full); margin-left: 6px;">Closest Match</span>' : ''}
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">📍 ${shop.address} • ⚡ ${dynamicDist}</div>
+              </div>
+            </div>
+            <div style="text-align: right; font-size: 0.78rem; font-weight: 700; color: var(--secondary);">
+              ⭐ ${shop.rating}
+            </div>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function renderCheckoutModal() {
+      if (!state.isCheckoutOpen) return '';
+
+      const userAddressVal = state.user?.address || 'Flat 302, Royal Residency, Alkapuri, Vadodara - 390007';
+      const activeShops = state.shops.filter(s => s.status !== 'Delisted');
+
+      return `
+        <div class="modal-overlay" onclick="closeCheckout()">
+          <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+              <h3>Schedule Laundry Pickup</h3>
+              <button class="close-btn" onclick="closeCheckout()">✕</button>
+            </div>
+            <form onsubmit="placeOrder(event)" style="padding: 24px;">
+              <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label style="font-size: 0.85rem; font-weight: 600;">Pickup Address</label>
+                  <button type="button" onclick="detectGPSLocation()" style="background: var(--primary-light); color: var(--primary); border: none; border-radius: var(--radius-full); padding: 2px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                    🎯 Detect GPS Location
+                  </button>
+                </div>
+                <input id="checkout-address" oninput="updateCheckoutProviders(this.value)" style="width: 100%; padding: 10px; margin-top: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-medium);" value="${userAddressVal}" />
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <label style="font-size: 0.85rem; font-weight: 600; display: block;">📍 Select Nearby Vadodara Provider</label>
+                  <button type="button" onclick="refreshProviderList()" style="background: var(--bg-main); border: 1px solid var(--border-medium); border-radius: var(--radius-full); padding: 2px 10px; font-size: 0.72rem; cursor: pointer;">
+                    🔄 Refresh List
+                  </button>
+                </div>
+                <div id="checkout-providers-list" style="display: flex; flex-direction: column; gap: 8px; transition: opacity 0.2s ease;">
+                  ${activeShops.map((shop, idx) => `
+                    <label style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); background: ${idx === 0 ? 'var(--primary-light)' : 'white'}; cursor: pointer;">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="radio" name="selectedProvider" value="${shop.id}" ${idx === 0 ? 'checked' : ''} />
+                        <div>
+                          <div style="font-weight: 700; font-size: 0.9rem;">${shop.name}</div>
+                          <div style="font-size: 0.75rem; color: var(--text-muted);">📍 ${shop.address} • ⚡ ${shop.distance}</div>
+                        </div>
+                      </div>
+                      <div style="text-align: right; font-size: 0.78rem; font-weight: 700; color: var(--secondary);">
+                        ⭐ ${shop.rating}
+                      </div>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <label style="font-size: 0.85rem; font-weight: 600;">Preferred Slot</label>
+                <select style="width: 100%; padding: 10px; margin-top: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-medium);">
+                  <option>Tomorrow, 9:00 AM - 11:00 AM</option>
+                  <option>Tomorrow, 4:00 PM - 6:00 PM</option>
+                </select>
+              </div>
+
+              <button class="view-btn" style="width: 100%; padding: 12px; font-size: 1rem;" type="submit">
+                Confirm Booking & Track Live
+              </button>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTrackerModal() {
+      if (!state.activeTrackerId) return '';
+      const ord = state.orders.find(o => o.id === state.activeTrackerId);
+      if (!ord) return '';
+
+      return `
+        <div class="modal-overlay" onclick="closeTracker()">
+          <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+              <div>
+                <h3>Live Tracker #${ord.id}</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Status synced with shop owner dashboard</p>
+              </div>
+              <button class="close-btn" onclick="closeTracker()">✕</button>
+            </div>
+            <div style="padding: 24px;">
+              <div class="tracker-stepper">
+                ${['Placed', 'In Wash', 'Ready', 'Delivered'].map((step, idx) => {
+                  const cur = ord.status;
+                  const isDone = (cur === 'In Washing' && idx <= 1) || (cur === 'Ready' && idx <= 2) || (cur === 'Completed' && idx <= 3) || idx === 0;
+                  return `
+                    <div class="step-node ${isDone ? 'completed' : ''}">
+                      <div class="step-circle">${idx + 1}</div>
+                      <span style="font-size: 0.75rem; font-weight: 600;">${step}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+              <p style="background: var(--primary-light); color: var(--primary); padding: 12px; border-radius: var(--radius-md); font-weight: 700; text-align: center;">
+                Current Status: ${ord.status}
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Action Handlers
+    function goToWelcome() { state.view = 'welcome'; saveSession(); render(); }
+    function switchRole(r) { state.role = r; saveSession(); render(); }
+    function setFilter(f) { state.filter = f; render(); }
+    function openAuth(t) { state.authTab = t; state.authErrorMsg = ''; render(); }
+    function closeAuth() { state.authTab = 'none'; state.authErrorMsg = ''; render(); }
+    function setAuthTab(t) { state.authTab = t; state.authErrorMsg = ''; render(); }
+
+    function openDemoModal() { state.isDemoModalOpen = true; render(); }
+    function closeDemoModal() { state.isDemoModalOpen = false; render(); }
+
+    function openReviewModal(id) { state.reviewProviderModalId = id; render(); }
+    function closeReviewModal() { state.reviewProviderModalId = null; render(); }
+
+    function openWarningModal(shopId) { state.warningModalShopId = shopId; state.warningDefaultText = ''; render(); }
+    function closeWarningModal() { state.warningModalShopId = null; state.warningDefaultText = ''; render(); }
+
+    function issueWarningFromComplaint(shopId, complaintText) {
+      state.warningModalShopId = shopId;
+      state.warningDefaultText = complaintText;
+      render();
+    }
+
+    function resolveComplaint(cmpId) {
+      state.complaints = state.complaints.filter(c => c.id !== cmpId);
+      saveDB('complaints', state.complaints);
+      render();
+    }
+
+    function submitIssueWarning(e, shopId) {
+      e.preventDefault();
+      const shop = state.shops.find(s => s.id === shopId);
+      if (!shop) return;
+
+      const reasonSelect = document.getElementById('warningReasonSelect')?.value;
+      const detailInput = document.getElementById('warningDetailInput')?.value;
+      const reason = detailInput ? `${reasonSelect}: ${detailInput}` : reasonSelect;
+
+      if (!shop.warnings) shop.warnings = [];
+      shop.warnings.push({
+        id: 'warn-' + Date.now(),
+        reason: reason,
+        date: new Date().toLocaleDateString()
+      });
+      shop.status = 'Warning Issued';
+
+      saveDB('shops', state.shops);
+      state.warningModalShopId = null;
+      render();
+    }
+
+    function delistActiveShop(shopId) {
+      const shop = state.shops.find(s => s.id === shopId);
+      if (shop) {
+        shop.status = 'Delisted';
+        saveDB('shops', state.shops);
+        render();
+      }
+    }
+
+    function relistShop(shopId) {
+      const shop = state.shops.find(s => s.id === shopId);
+      if (shop) {
+        shop.status = 'Approved';
+        saveDB('shops', state.shops);
+        render();
+      }
+    }
+
+    function acceptProvider(reqId) {
+      const req = state.pendingProviders.find(p => p.id === reqId);
+      if (!req) return;
+
+      const newShop = {
+        id: 'shop-' + Date.now(),
+        name: req.shopName,
+        ownerName: req.ownerName,
+        rating: 5.0,
+        reviewsCount: 1,
+        distance: '1.1 km away',
+        turnaround: '24 Hours',
+        expressAvailable: true,
+        address: req.address,
+        phone: req.phone,
+        image: 'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80',
+        tags: ['Verified Partner', 'Newly Approved'],
+        status: 'Approved',
+        warnings: [],
+        services: [
+          { id: 's1', name: 'Wash & Fold (per kg)', price: 3.50, unit: 'kg', desc: 'Quality care wash' },
+          { id: 's2', name: 'Steam Press Ironing', price: 2.50, unit: 'piece', desc: 'Crisp press finish' }
+        ]
+      };
+
+      state.shops.push(newShop);
+      state.pendingProviders = state.pendingProviders.filter(p => p.id !== reqId);
+      saveDB('shops', state.shops);
+      saveDB('pendingProviders', state.pendingProviders);
+      state.reviewProviderModalId = null;
+      render();
+    }
+
+    function removeProvider(reqId) {
+      state.pendingProviders = state.pendingProviders.filter(p => p.id !== reqId);
+      saveDB('pendingProviders', state.pendingProviders);
+      state.reviewProviderModalId = null;
+      render();
+    }
+
+    function demoPreset(r) {
+      if (r === 'jadav') {
+        const jadavUser = state.userDB.find(u => u.id === 'usr-jadav') || { id: 'usr-jadav', name: 'Jadav Laundry Provider', role: 'vendor', shopId: 'shop-jadav' };
+        state.user = jadavUser;
+        state.role = 'vendor';
+        state.activeVendorId = 'shop-jadav';
+      } else {
+        const match = state.userDB.find(u => u.role === r) || { name: r.toUpperCase(), role: r };
+        state.user = match;
+        state.role = r;
+        if (r === 'vendor') state.activeVendorId = match.shopId || 'shop-jadav';
+      }
+      state.view = 'app';
+      state.isDemoModalOpen = false;
+      saveSession();
+      render();
+    }
+
+    function logoutUser() {
+      state.user = null;
+      state.view = 'welcome';
+      localStorage.removeItem('laundryhub_currentUser');
+      localStorage.removeItem('laundryhub_currentRole');
+      localStorage.removeItem('laundryhub_currentView');
+      render();
+    }
+
+    function resetDemoDB() {
+      localStorage.removeItem('laundryhub_userDB');
+      localStorage.removeItem('laundryhub_shops');
+      localStorage.removeItem('laundryhub_orders');
+      localStorage.removeItem('laundryhub_pendingProviders');
+      localStorage.removeItem('laundryhub_complaints');
+      localStorage.removeItem('laundryhub_currentUser');
+      localStorage.removeItem('laundryhub_currentRole');
+      localStorage.removeItem('laundryhub_currentView');
+      state.userDB = [...initialUserDB];
+      state.pendingProviders = [...initialPendingProviders];
+      state.complaints = [...initialComplaints];
+      state.user = null;
+      state.view = 'welcome';
+      state.isDemoModalOpen = false;
+      render();
+    }
+
+    function submitDatabaseAuth(e, targetRole, authAction) {
+      e.preventDefault();
+      const emailInput = document.getElementById('authEmailInput')?.value;
+      const passInput = document.getElementById('authPassInput')?.value;
+      const nameInput = document.getElementById('authNameInput')?.value;
+      const ownerInput = document.getElementById('authOwnerInput')?.value;
+
+      state.authErrorMsg = '';
+
+      if (authAction === 'login') {
+        const found = state.userDB.find(u =>
+          (u.email.toLowerCase() === emailInput.toLowerCase() || u.phone === emailInput) &&
+          u.password === passInput
+        );
+
+        if (found) {
+          state.user = found;
+          state.role = found.role;
+          state.authTab = 'none';
+          state.view = 'app';
+          saveSession();
+          render();
+        } else {
+          state.authErrorMsg = 'Invalid email/phone or password!';
+          render();
+        }
+      } else {
+        const exists = state.userDB.find(u => u.email.toLowerCase() === emailInput.toLowerCase());
+        if (exists) {
+          state.authErrorMsg = 'An account with this email already exists in the database!';
+          render();
+          return;
+        }
+
+        const newUser = {
+          id: 'usr-' + Date.now(),
+          role: targetRole,
+          name: nameInput || (targetRole === 'customer' ? 'Customer' : ownerInput || 'Shop Owner'),
+          email: emailInput,
+          phone: '+1 (555) 999-8888',
+          address: 'Main Street 101',
+          password: passInput
+        };
+
+        if (targetRole === 'vendor') {
+          const newShopId = 'shop-' + Date.now();
+          const newShopName = nameInput || 'New Express Laundry';
+          const newShop = {
+            id: newShopId,
+            name: newShopName,
+            ownerName: ownerInput || 'Shop Owner',
+            rating: 5.0,
+            reviewsCount: 1,
+            distance: '0.4 km away (Newly Partnered)',
+            turnaround: '24 Hours',
+            expressAvailable: true,
+            emergencyAvailable: true,
+            address: 'Alkapuri, Vadodara',
+            phone: '+91 98765 43210',
+            image: 'https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80',
+            tags: ['Verified Partner', 'New Shop', 'Express 24h', 'Dry Cleaning'],
+            status: 'Approved',
+            minOrder: '₹120.00',
+            commissionRate: '15%',
+            warnings: [],
+            services: [
+              { id: 's1', name: 'Wash & Fold (per kg)', price: 60.00, unit: 'kg', desc: 'Clean daily wear' },
+              { id: 's2', name: 'Steam Press Ironing', price: 25.00, unit: 'piece', desc: 'Crisp press finish' },
+              { id: 's3', name: 'Heavy Saree & Suit Dry Clean', price: 250.00, unit: 'set', desc: 'Eco solvent dry clean' },
+              { id: 's4', name: 'Sneaker & Shoe Cleansing', price: 249.00, unit: 'pair', desc: 'Shoe scrubbing & deodorizing' }
+            ]
+          };
+
+          newUser.shopId = newShopId;
+          state.shops.unshift(newShop);
+          saveDB('shops', state.shops);
+        }
+
+        state.userDB.push(newUser);
+        saveDB('userDB', state.userDB);
+
+        state.user = newUser;
+        state.role = targetRole;
+        state.authTab = 'none';
+        state.view = 'app';
+        saveSession();
+        render();
+      }
+    }
+
+    function openShopModal(id) { state.activeShopModal = id; render(); }
+    function closeShopModal() { state.activeShopModal = null; render(); }
+
+    function getCartItemQty(shopId, svcId) {
+      if (state.cart.shopId !== shopId) return 0;
+      const item = (state.cart.items || []).find(i => i.id === svcId);
+      return item ? item.qty : 0;
+    }
+
+    function changeCartQty(shopId, svcId, delta) {
+      const shop = state.shops.find(s => s.id === shopId);
+      if (!shop) return;
+      const svc = shop.services.find(s => s.id === svcId);
+      if (!svc) return;
+
+      if (state.cart.shopId && state.cart.shopId !== shopId) {
+        if (delta > 0) {
+          if (confirm(`Your cart contains items from "${state.cart.shopName}". Clear cart and start new order with "${shop.name}"?`)) {
+            state.cart = { shopId: shop.id, shopName: shop.name, items: [{ ...svc, qty: delta }], carePreferences: ["Standard Detergent"] };
+          } else {
+            return;
+          }
+        }
+      } else {
+        if (!state.cart.items) state.cart.items = [];
+        const idx = state.cart.items.findIndex(i => i.id === svcId);
+        if (idx > -1) {
+          const newQty = state.cart.items[idx].qty + delta;
+          if (newQty > 0) {
+            state.cart.items[idx].qty = newQty;
+          } else {
+            state.cart.items.splice(idx, 1);
+            if (state.cart.items.length === 0) {
+              state.cart.shopId = null;
+              state.cart.shopName = '';
+            }
+          }
+        } else if (delta > 0) {
+          state.cart.shopId = shop.id;
+          state.cart.shopName = shop.name;
+          state.cart.items.push({ ...svc, qty: delta });
+        }
+      }
+      render();
+    }
+
+    function setDeliveryMode(m) {
+      state.cart.deliveryMode = m;
+      render();
+    }
+
+    function assignShopToCart(shopId, shopName) {
+      state.cart.shopId = shopId;
+      state.cart.shopName = shopName;
+      render();
+    }
+
+    function toggleCarePref(pref) {
+      if (!state.cart.carePreferences) state.cart.carePreferences = ["Standard Detergent"];
+      const idx = state.cart.carePreferences.indexOf(pref);
+      if (idx > -1) {
+        state.cart.carePreferences.splice(idx, 1);
+      } else {
+        state.cart.carePreferences.push(pref);
+      }
+      render();
+    }
+
+    function addToCart(shopId, svcId) {
+      changeCartQty(shopId, svcId, 1);
+    }
+
+    function openCart() { state.isCartOpen = true; render(); }
+    function closeCart() { state.isCartOpen = false; render(); }
+    function openCheckout() { state.isCheckoutOpen = true; render(); }
+    function closeCheckout() { state.isCheckoutOpen = false; render(); }
+
+    function placeOrder(e) {
+      e.preventDefault();
+      const selectedRadio = document.querySelector('input[name="selectedProvider"]:checked');
+      const selectedId = selectedRadio ? selectedRadio.value : state.cart.shopId;
+      const targetShop = state.shops.find(s => s.id === selectedId);
+
+      const subtotal = (state.cart.items || []).reduce((s, i) => s + i.price * i.qty, 0);
+      const mode = state.cart.deliveryMode || 'standard';
+      const surgeFee = mode === 'emergency' ? 99.00 : mode === 'express' ? 49.00 : 0;
+      const total = subtotal > 0 ? subtotal + 45.00 + surgeFee : 0;
+
+      const newOrd = {
+        id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+        customerName: state.user?.name || "Priya Patel",
+        customerPhone: state.user?.phone || "+91 98765 43210",
+        shopId: selectedId || "shop-1",
+        shopName: targetShop?.name || state.cart.shopName || "Sparkle & Spin Laundry Hub",
+        status: "Order Placed",
+        items: state.cart.items || [],
+        deliveryMode: mode,
+        totalAmount: total,
+        pickupAddress: document.getElementById('checkout-address')?.value || state.user?.address || "Flat 302, Royal Residency, Alkapuri, Vadodara",
+        deliverySlot: mode === 'emergency' ? 'Today (In 3 Hours Rush)' : 'Tomorrow, 5:00 PM'
+      };
+      state.orders.unshift(newOrd);
+      saveDB('orders', state.orders);
+
+      fetch(`${API_BASE}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrd)
+      }).catch(() => {});
+
+      state.activeTrackerId = newOrd.id;
+      state.cart = { shopId: null, shopName: '', items: [], deliveryMode: 'standard' };
+      state.isCheckoutOpen = false;
+      render();
+    }
+
+    function openTracker(id) { state.activeTrackerId = id; render(); }
+    function closeTracker() { state.activeTrackerId = null; render(); }
+
+    function advanceOrder(ordId, currentKey) {
+      const ord = state.orders.find(o => o.id === ordId);
+      if (ord) {
+        if (currentKey === 'Order Placed') ord.status = 'In Washing';
+        else if (currentKey === 'In Washing') ord.status = 'Ready';
+        else if (currentKey === 'Ready') ord.status = 'Completed';
+        saveDB('orders', state.orders);
+
+        fetch(`${API_BASE}/orders/${ordId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: ord.status })
+        }).catch(() => {});
+      }
+      render();
+    }
+
+    function acceptVendorOrder(ordId) {
+      const ord = state.orders.find(o => o.id === ordId);
+      if (ord) {
+        ord.status = 'In Washing';
+        saveDB('orders', state.orders);
+
+        fetch(`${API_BASE}/orders/${ordId}/accept`, {
+          method: 'PUT'
+        }).catch(() => {});
+        render();
+      }
+    }
+
+    function openVendorRejectModal(ordId) {
+      state.vendorRejectModalId = ordId;
+      render();
+    }
+
+    function closeVendorRejectModal() {
+      state.vendorRejectModalId = null;
+      render();
+    }
+
+    function submitVendorRejectOrder(e, ordId) {
+      e.preventDefault();
+      const ord = state.orders.find(o => o.id === ordId);
+      if (ord) {
+        const reasonSelect = document.getElementById('vendorRejectReasonSelect')?.value;
+        const customNote = document.getElementById('vendorRejectNoteInput')?.value;
+        const finalReason = customNote ? `${reasonSelect} - ${customNote}` : reasonSelect;
+        ord.status = 'Rejected';
+        ord.rejectionReason = finalReason || 'Declined by provider';
+        saveDB('orders', state.orders);
+      }
+      state.vendorRejectModalId = null;
+      render();
+    }
+
+    function openVendorSummaryModal(ordId) {
+      state.vendorSummaryModalId = ordId;
+      render();
+    }
+
+    function closeVendorSummaryModal() {
+      state.vendorSummaryModalId = null;
+      render();
+    }
+
+    function renderVendorRejectModal() {
+      if (!state.vendorRejectModalId) return '';
+      const ord = state.orders.find(o => o.id === state.vendorRejectModalId);
+      if (!ord) return '';
+
+      return `
+        <div class="modal-overlay" onclick="closeVendorRejectModal()">
+          <div class="modal-content" style="max-width: 480px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: white;">
+              <div>
+                <h3 style="color: white;">❌ Decline Order #${ord.id}</h3>
+                <p style="font-size: 0.8rem; color: #fee2e2;">Customer: ${ord.customerName}</p>
+              </div>
+              <button class="close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeVendorRejectModal()">✕</button>
+            </div>
+            <form onsubmit="submitVendorRejectOrder(event, '${ord.id}')" style="padding: 24px;">
+              <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: var(--radius-md); font-size: 0.85rem; margin-bottom: 16px;">
+                <strong>⚠️ Order Rejection Warning:</strong> Declining will release customer funds and notify them immediately.
+              </div>
+              <div style="margin-bottom: 16px;">
+                <label style="font-size: 0.85rem; font-weight: 600;">Reason for Rejection</label>
+                <select id="vendorRejectReasonSelect" style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px;">
+                  <option>Shop Capacity Full for Selected Slot</option>
+                  <option>Out of Pickup/Delivery Coverage Radius</option>
+                  <option>Equipment Maintenance / Washer Down</option>
+                  <option>Requested Emergency 3h Rush Unavailable</option>
+                  <option>Special Garment Fabric Not Supported</option>
+                  <option>Custom Reason</option>
+                </select>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <label style="font-size: 0.85rem; font-weight: 600;">Additional Customer Note (Optional)</label>
+                <textarea id="vendorRejectNoteInput" rows="3" style="width: 100%; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-top: 4px;" placeholder="Next available slot is tomorrow..."></textarea>
+              </div>
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="filter-chip" onclick="closeVendorRejectModal()">Cancel</button>
+                <button type="submit" class="view-btn" style="background: var(--danger); color: white;">Confirm Decline & Reject</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVendorSummaryModal() {
+      if (!state.vendorSummaryModalId) return '';
+      const ord = state.orders.find(o => o.id === state.vendorSummaryModalId);
+      if (!ord) return '';
+
+      const isPending = ord.status === 'Order Placed';
+      const isRejected = ord.status === 'Rejected';
+
+      const subtotal = (ord.items || []).reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+      const surgeFee = ord.deliveryMode === 'emergency' ? 99.00 : ord.deliveryMode === 'express' ? 49.00 : 0;
+      const netEarnings = Math.max(0, (subtotal + surgeFee + 30.00) * 0.85);
+
+      return `
+        <div class="modal-overlay" onclick="closeVendorSummaryModal()">
+          <div class="modal-content" style="max-width: 600px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white;">
+              <div>
+                <h3 style="color: white;">📋 Order #${ord.id} Full Summary</h3>
+                <p style="font-size: 0.8rem; color: #c7d2fe;">Customer: ${ord.customerName} (${ord.customerPhone})</p>
+              </div>
+              <button class="close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeVendorSummaryModal()">✕</button>
+            </div>
+            <div style="padding: 24px; max-height: 80vh; overflow-y: auto;">
+              <div style="background: var(--bg-main); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 16px;">
+                <div style="font-weight: 700;">📍 Pickup Address:</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">${ord.pickupAddress}</div>
+                <div style="font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-top: 4px;">📅 Scheduled Slot: ${ord.deliverySlot || 'Standard'}</div>
+              </div>
+
+              ${ord.carePreferences?.length > 0 ? `
+                <div style="margin-bottom: 16px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">✨ CARE PREFERENCES:</div>
+                  <div style="display: flex; gap: 6px; margin-top: 4px;">
+                    ${ord.carePreferences.map(p => `<span style="background: var(--primary-light); color: var(--primary); padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;">✨ ${p}</span>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+
+              ${isRejected ? `
+                <div style="background: var(--danger-light); color: var(--danger); padding: 12px; border-radius: var(--radius-md); font-size: 0.85rem; margin-bottom: 16px;">
+                  <strong>❌ Order Rejected:</strong> ${ord.rejectionReason || 'Declined by provider'}
+                </div>
+              ` : ''}
+
+              <h4 style="font-size: 0.95rem; margin-bottom: 8px;">👕 Garment Items Breakdown</h4>
+              <div style="border: 1px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 16px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                  <thead>
+                    <tr style="background: var(--bg-main); border-bottom: 1px solid var(--border-medium); text-align: left;">
+                      <th style="padding: 8px 12px;">Garment Item</th>
+                      <th style="padding: 8px 12px; text-align: center;">Qty</th>
+                      <th style="padding: 8px 12px; text-align: right;">Rate</th>
+                      <th style="padding: 8px 12px; text-align: right;">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${(ord.items || []).map(i => `
+                      <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 8px 12px; font-weight: 600;">${i.name}</td>
+                        <td style="padding: 8px 12px; text-align: center;">${i.qty} ${i.unit}</td>
+                        <td style="padding: 8px 12px; text-align: right;">₹${(i.price || 0).toFixed(2)}</td>
+                        <td style="padding: 8px 12px; text-align: right; font-weight: 700;">₹${((i.price || 0) * (i.qty || 1)).toFixed(2)}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="background: var(--bg-main); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 1.1rem; color: var(--primary);">
+                  <span>Total Customer Bill:</span>
+                  <span>₹${(ord.totalAmount || 0).toFixed(2)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--secondary); font-weight: 700; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border-medium);">
+                  <span>Est. Provider Net Payout:</span>
+                  <span>₹${netEarnings.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="filter-chip" onclick="window.print()">🖨️ Print Receipt</button>
+                ${isPending ? `
+                  <button class="filter-chip" style="color: var(--danger); background: var(--danger-light); font-weight: 700;" onclick="closeVendorSummaryModal(); openVendorRejectModal('${ord.id}')">❌ Reject Request</button>
+                  <button class="view-btn" style="background: var(--secondary); font-weight: 700;" onclick="closeVendorSummaryModal(); acceptVendorOrder('${ord.id}')">✅ Accept & Start Job</button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function openCustomerOrdersModal() { state.isCustomerOrdersOpen = true; render(); }
+    function closeCustomerOrdersModal() { state.isCustomerOrdersOpen = false; render(); }
+
+    function renderCustomerOrdersModal() {
+      if (!state.isCustomerOrdersOpen) return '';
+
+      const customerOrders = state.orders.filter(o => {
+        if (!state.user) return true;
+        const matchEmail = state.user.email && o.customerEmail && o.customerEmail.toLowerCase() === state.user.email.toLowerCase();
+        const matchPhone = state.user.phone && o.customerPhone && o.customerPhone.includes(state.user.phone);
+        const matchName = state.user.name && o.customerName && o.customerName.toLowerCase().includes(state.user.name.toLowerCase());
+        return matchEmail || matchPhone || matchName || !o.customerEmail;
+      });
+
+      return `
+        <div class="modal-overlay" onclick="closeCustomerOrdersModal()">
+          <div class="modal-content" style="max-width: 620px;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: white;">
+              <div>
+                <h3 style="color: white; margin: 0;">📦 My Service Requests (${customerOrders.length})</h3>
+                <p style="font-size: 0.8rem; color: #c7d2fe; margin-top: 2px;">Account: ${state.user?.name || 'Customer'} (${state.user?.email || 'priya@example.in'})</p>
+              </div>
+              <button class="close-btn" style="color: white; background: rgba(255,255,255,0.2);" onclick="closeCustomerOrdersModal()">✕</button>
+            </div>
+            <div style="padding: 24px; max-height: 75vh; overflow-y: auto;">
+              ${customerOrders.length === 0 ? `
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                  <h4>No Service Requests Placed Yet</h4>
+                  <p style="font-size: 0.85rem; margin-top: 4px;">Book laundry pickup from the marketplace to track your request here!</p>
+                </div>
+              ` : customerOrders.map(ord => `
+                <div style="background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm); border-left: ${ord.status === 'Order Placed' ? '4px solid #f59e0b' : ord.status === 'Rejected' ? '4px solid #ef4444' : '4px solid var(--primary)'}">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <div>
+                      <strong style="color: var(--primary);">#${ord.id}</strong>
+                      <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 6px;">Shop: <strong>${ord.shopName}</strong></span>
+                    </div>
+                    <span class="badge ${ord.status === 'Order Placed' ? 'badge-warning' : ord.status === 'Rejected' ? 'badge-rejected' : 'badge-completed'}">${ord.status}</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">📍 ${ord.pickupAddress}</div>
+                  <div style="background: var(--bg-main); padding: 8px 10px; border-radius: var(--radius-sm); font-size: 0.8rem; margin-bottom: 8px;">
+                    ${(ord.items || []).map(i => `<div>• ${i.name} (x${i.qty} ${i.unit})</div>`).join('')}
+                  </div>
+                  ${ord.status === 'Rejected' ? `
+                    <div style="font-size: 0.78rem; color: var(--danger); background: var(--danger-light); padding: 6px 10px; border-radius: var(--radius-md); margin-bottom: 8px;">
+                      ❌ Rejection Note from Provider: ${ord.rejectionReason || 'Shop Capacity Full'}
+                    </div>
+                  ` : ''}
+                  ${ord.status === 'Order Placed' ? `
+                    <div style="font-size: 0.78rem; color: #b45309; background: #fffbeb; padding: 6px 10px; border-radius: var(--radius-md); margin-bottom: 8px;">
+                      📥 Request Sent to Provider: Waiting for shop owner acceptance...
+                    </div>
+                  ` : ''}
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 8px;">
+                    <span style="font-weight: 800; color: var(--primary);">₹${(ord.totalAmount || 0).toFixed(2)}</span>
+                    <button class="view-btn" style="padding: 4px 12px; font-size: 0.78rem;" onclick="closeCustomerOrdersModal(); openTracker('${ord.id}')">
+                      Track Live ➔
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    render();
+  </script>
+</body>
+</html>
