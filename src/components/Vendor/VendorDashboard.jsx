@@ -14,11 +14,17 @@ export const VendorDashboard = () => {
   const [selectedRejectOrder, setSelectedRejectOrder] = useState(null);
 
   // Lock to currentUser's registered shop if logged in as vendor
+  const isVendorUser = currentUser && currentUser.role === 'vendor';
+  const isDemoSession = !currentUser || currentUser.isDemo || currentUser.id === 'usr-jadav';
   const vendorShopId = currentUser?.shopId || activeVendorId || shops[0]?.id;
   const activeShop = shops.find((s) => s.id === vendorShopId) || shops[0];
 
-  // Filter orders strictly belonging to this shop
-  const shopOrders = orders.filter((o) => o.shopId === activeShop.id);
+  // Real Provider Mode: show ONLY real customer orders. Demo Mode: show sample presentation orders.
+  const shopOrders = orders.filter((o) => {
+    if (!o || o.shopId !== activeShop.id) return false;
+    if (!isDemoSession && o.isDemo) return false;
+    return true;
+  });
 
   // Status arrays
   const pendingOrders = shopOrders.filter((o) => o.status === 'Order Placed');
@@ -42,6 +48,23 @@ export const VendorDashboard = () => {
 
   return (
     <div style={{ paddingBottom: '60px' }}>
+      {/* Real vs Demo Data Mode Status Banner */}
+      {!isDemoSession ? (
+        <div style={{ background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '12px 18px', borderRadius: 'var(--radius-md)', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', fontWeight: 600 }}>
+          <div>
+            🟢 <strong>Live Real Provider Account:</strong> Showing only real customer orders placed for <strong>{activeShop.name}</strong>. Dummy demo orders are hidden.
+          </div>
+          <span className="badge badge-approved" style={{ background: '#22c55e', color: 'white' }}>REAL DATA ONLY</span>
+        </div>
+      ) : (
+        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1e40af', padding: '10px 16px', borderRadius: 'var(--radius-md)', marginBottom: '20px', fontSize: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            🎬 <strong>Presentation Demo Mode:</strong> Showing sample mock orders for feature testing. Log in as a registered provider to view real store data.
+          </div>
+          <span className="badge" style={{ background: '#3b82f6', color: 'white' }}>DEMO SAMPLE MODE</span>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div className="vendor-header" style={{ background: 'white', padding: '20px 24px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
@@ -55,7 +78,7 @@ export const VendorDashboard = () => {
         </div>
 
         {/* Shop Display / Lock Badge */}
-        {currentUser?.role === 'vendor' ? (
+        {isVendorUser ? (
           <div style={{ background: 'var(--primary-light)', color: 'var(--primary)', fontWeight: 700, padding: '8px 16px', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', border: '1px solid var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Store size={16} /> Logged in Store: <strong>{activeShop.name}</strong>
           </div>

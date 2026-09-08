@@ -587,6 +587,7 @@
       orders: loadDB('orders', [
         {
           id: "ORD-9821",
+          isDemo: true,
           customerName: "Sneha Kapadia",
           customerPhone: "+91 98251 44556",
           shopId: "shop-1",
@@ -605,6 +606,7 @@
         },
         {
           id: "ORD-9754",
+          isDemo: true,
           customerName: "Rahul Verma",
           customerPhone: "+91 97129 88776",
           shopId: "shop-1",
@@ -622,6 +624,7 @@
         },
         {
           id: "ORD-9482",
+          isDemo: true,
           customerName: "Priya Patel",
           customerPhone: "+91 98765 43210",
           shopId: "shop-1",
@@ -639,6 +642,7 @@
         },
         {
           id: "ORD-9310",
+          isDemo: true,
           customerName: "Amit Shah",
           customerPhone: "+91 98980 12345",
           shopId: "shop-1",
@@ -655,6 +659,7 @@
         },
         {
           id: "ORD-8940",
+          isDemo: true,
           customerName: "Karan Parikh",
           customerPhone: "+91 98240 11223",
           shopId: "shop-1",
@@ -1171,7 +1176,14 @@
       const warnings = activeShop.warnings || [];
       const hasWarning = warnings.length > 0;
       const isVendorUser = state.user && state.role === 'vendor';
-      const shopOrders = (state.orders || []).filter(o => o && o.shopId === activeShop.id);
+      const isDemoSession = !state.user || state.user.isDemo || state.user.id === 'usr-jadav';
+
+      // Real Provider Mode: show ONLY real customer orders. Demo Mode: show presentation sample orders.
+      const shopOrders = (state.orders || []).filter(o => {
+        if (!o || o.shopId !== activeShop.id) return false;
+        if (!isDemoSession && o.isDemo) return false;
+        return true;
+      });
 
       const pendingOrders = shopOrders.filter(o => o.status === 'Order Placed');
       const washingOrders = shopOrders.filter(o => o.status === 'In Washing' || o.status === 'Picked Up');
@@ -1199,6 +1211,22 @@
               </div>
             </div>
           ` : ''}
+
+          ${!isDemoSession ? `
+            <div style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; padding: 12px 18px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600;">
+              <div>
+                🟢 <strong>Live Real Provider Account:</strong> Showing only real customer orders placed for <strong>${activeShop.name}</strong>. Dummy demo orders are hidden.
+              </div>
+              <span class="badge badge-approved" style="background: #22c55e; color: white;">REAL DATA ONLY</span>
+            </div>
+          ` : `
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 10px 16px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                🎬 <strong>Presentation Demo Mode:</strong> Showing sample mock orders for feature testing. Log in as a registered provider to view real store data.
+              </div>
+              <span class="badge" style="background: #3b82f6; color: white;">DEMO SAMPLE MODE</span>
+            </div>
+          `}
 
           <!-- Header -->
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">

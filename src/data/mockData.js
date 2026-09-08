@@ -281,6 +281,7 @@ export const initialShops = [
 export const initialOrders = [
   {
     id: "ORD-9821",
+    isDemo: true,
     customerName: "Sneha Kapadia",
     customerPhone: "+91 98251 44556",
     shopId: "shop-1",
@@ -302,6 +303,7 @@ export const initialOrders = [
   },
   {
     id: "ORD-9754",
+    isDemo: true,
     customerName: "Rahul Verma",
     customerPhone: "+91 97129 88776",
     shopId: "shop-1",
@@ -322,6 +324,7 @@ export const initialOrders = [
   },
   {
     id: "ORD-9482",
+    isDemo: true,
     customerName: "Priya Patel",
     customerPhone: "+91 98765 43210",
     shopId: "shop-1",
@@ -342,6 +345,7 @@ export const initialOrders = [
   },
   {
     id: "ORD-9310",
+    isDemo: true,
     customerName: "Amit Shah",
     customerPhone: "+91 98980 12345",
     shopId: "shop-1",
@@ -361,6 +365,7 @@ export const initialOrders = [
   },
   {
     id: "ORD-9102",
+    isDemo: true,
     customerName: "Neha Joshi",
     customerPhone: "+91 94260 55443",
     shopId: "shop-1",
@@ -381,6 +386,7 @@ export const initialOrders = [
   },
   {
     id: "ORD-8940",
+    isDemo: true,
     customerName: "Karan Parikh",
     customerPhone: "+91 98240 11223",
     shopId: "shop-1",
