@@ -24,11 +24,11 @@ export const AppProvider = ({ children }) => {
   const [authView, setAuthView] = useState(() => loadDB('authView', 'welcome'));
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(() => !loadDB('currentUser', null));
 
-  // Database tables loaded from LocalStorage
-  const [userDB, setUserDB] = useState(() => loadDB('userDB', initialUserDB));
-  const [shops, setShops] = useState(() => loadDB('shops', initialShops));
-  const [orders, setOrders] = useState(() => loadDB('orders', initialOrders));
-  const [pendingVendors, setPendingVendors] = useState(() => loadDB('pendingVendors', initialPendingVendors));
+  // Database tables loaded from LocalStorage (Clean defaults for Real Mode)
+  const [userDB, setUserDB] = useState(() => loadDB('userDB', []));
+  const [shops, setShops] = useState(() => loadDB('shops', []));
+  const [orders, setOrders] = useState(() => loadDB('orders', []));
+  const [pendingVendors, setPendingVendors] = useState(() => loadDB('pendingVendors', []));
 
   // Sync Database & Session Changes to LocalStorage
   useEffect(() => { saveDB('shops', shops); }, [shops]);
@@ -111,7 +111,7 @@ export const AppProvider = ({ children }) => {
     setIsAuthModalOpen(false);
   };
 
-  // REGISTER NEW VENDOR & AUTO-PUBLISH SHOP TO MARKETPLACE
+  // REGISTER NEW VENDOR & SUBMIT FOR ADMIN APPROVAL
   const registerVendorShop = (vendorData) => {
     const newShopId = `shop-${Date.now()}`;
     const newShopName = vendorData.shopName || 'New Laundry Hub';
@@ -130,8 +130,8 @@ export const AppProvider = ({ children }) => {
       address: vendorData.address || "Alkapuri, Vadodara",
       phone: vendorData.phone || "+91 98765 43210",
       image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
-      tags: ["Verified Vendor", "New Partner", "Express 24h", "Dry Cleaning"],
-      status: "Approved", // Auto-published so it immediately shows in customer shop selection list!
+      tags: ["Verified Vendor", "New Partner", "Pending Approval"],
+      status: "Pending Approval", // Requires Admin Approval to list on Customer Marketplace!
       minOrder: "₹120.00",
       commissionRate: "15%",
       warnings: [],
@@ -143,13 +143,30 @@ export const AppProvider = ({ children }) => {
       ]
     };
 
-    // Save shop to DB state
+    const pendingReq = {
+      id: `req-${Date.now()}`,
+      shopId: newShopId,
+      shopName: newShopName,
+      ownerName: ownerName,
+      phone: vendorData.phone || "+91 98765 43210",
+      email: vendorData.email,
+      address: vendorData.address || "Alkapuri, Vadodara",
+      businessLicenseNo: `GSTIN24${Math.random().toString(36).substring(2, 7).toUpperCase()}1Z5`,
+      taxIdNo: `PAN-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+      idProofStatus: "Verified Aadhaar & Business Certificate",
+      status: "Pending Review",
+      appliedDate: new Date().toLocaleDateString()
+    };
+
+    // Save shop and pending request to DB state
     setShops((prev) => [newShop, ...prev]);
+    setPendingVendors((prev) => [pendingReq, ...prev]);
 
     // Create vendor user in DB
     const newVendorUser = {
       id: `usr-v-${Date.now()}`,
       role: 'vendor',
+      isDemo: false,
       name: ownerName,
       email: vendorData.email,
       phone: vendorData.phone || '+91 98765 43210',
@@ -329,31 +346,19 @@ export const AppProvider = ({ children }) => {
     const req = pendingVendors.find((v) => v.id === reqId);
     if (!req) return;
 
-    const newShop = {
-      id: `shop-${Date.now()}`,
-      name: req.shopName || req.name,
-      ownerName: req.ownerName,
-      rating: 5.0,
-      reviewsCount: 1,
-      distance: "1.2 km away",
-      turnaround: "24 Hours",
-      expressAvailable: true,
-      emergencyAvailable: true,
-      address: req.address,
-      phone: req.phone,
-      image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
-      tags: ["Verified Vendor", "New Partner"],
-      status: "Approved",
-      minOrder: "₹150.00",
-      commissionRate: "15%",
-      warnings: [],
-      services: [
-        { id: `s1-${Date.now()}`, name: "Wash & Fold (per kg)", price: 60.00, unit: "kg", desc: "Washed & neatly folded" },
-        { id: `s2-${Date.now()}`, name: "Steam Ironing", price: 25.00, unit: "piece", desc: "Crisp press finish" }
-      ]
-    };
+    setShops((prev) =>
+      prev.map((s) => {
+        if (s.id === req.shopId || s.name === req.shopName) {
+          return {
+            ...s,
+            status: "Approved",
+            tags: s.tags ? [...s.tags.filter(t => t !== "Pending Approval"), "Approved"] : ["Approved"]
+          };
+        }
+        return s;
+      })
+    );
 
-    setShops((prev) => [newShop, ...prev]);
     setPendingVendors((prev) => prev.filter((v) => v.id !== reqId));
   };
 

@@ -2,11 +2,38 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { X, Calendar, MapPin, User, CreditCard, CheckCircle2, Store, Star, RefreshCw, Navigation, Loader2 } from 'lucide-react';
 
+export const isDemoShop = (shop) => {
+  if (!shop) return false;
+  if (shop.isDemo) return true;
+  if (typeof shop.id === 'string' && (shop.id === 'shop-jadav' || /^shop-([1-9]|1[0-9])$/.test(shop.id))) return true;
+  if (shop.name && (
+    shop.name.includes('Bandbox') ||
+    shop.name.includes('U-Clean') ||
+    shop.name.includes('Snowwhite') ||
+    shop.name.includes('Fabricspa') ||
+    shop.name.includes('Spin \'N\' Shine') ||
+    shop.name.includes('Cleanomat') ||
+    shop.name.includes('Baroda Central') ||
+    shop.name.includes('Royal Steam') ||
+    shop.name.includes('Parul Express') ||
+    shop.name.includes('Ellora Cleaners') ||
+    shop.name.includes('Bhayli Express') ||
+    shop.name.includes('TumbleDry') ||
+    shop.name.includes('Jadav Laundry')
+  )) return true;
+  return false;
+};
+
 export const CheckoutModal = () => {
   const { isCheckoutOpen, setIsCheckoutOpen, placeOrder, cart, currentUser, shops, userLocation, updateUserLocation } = useApp();
 
-  const activeShops = (shops || []).filter(s => s.status !== 'Delisted');
-  const [selectedShopId, setSelectedShopId] = useState(cart?.shopId || activeShops[0]?.id || 'shop-1');
+  const isDemoMode = currentUser?.isDemo;
+  const activeShops = (shops || []).filter(s => {
+    if (s.status === 'Delisted' || s.status === 'Pending Approval') return false;
+    if (!isDemoMode && isDemoShop(s)) return false;
+    return true;
+  });
+  const [selectedShopId, setSelectedShopId] = useState(cart?.shopId || activeShops[0]?.id || '');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
