@@ -18,6 +18,8 @@ backend/*.log
 *.class
 *.jar
 *.war
+maven/
+maven.zip
 
 # H2 Database files
 *.db

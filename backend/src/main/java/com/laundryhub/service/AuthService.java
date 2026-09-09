@@ -7,21 +7,23 @@ import com.laundryhub.model.Shop;
 import com.laundryhub.model.User;
 import com.laundryhub.repository.ShopRepository;
 import com.laundryhub.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
+
+    public AuthService(UserRepository userRepository, ShopRepository shopRepository) {
+        this.userRepository = userRepository;
+        this.shopRepository = shopRepository;
+    }
 
     public User login(LoginRequest request) {
         Optional<User> userOpt = userRepository.findByEmailAndPassword(request.getEmail(), request.getPassword());
