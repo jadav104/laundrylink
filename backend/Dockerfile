@@ -8,8 +8,8 @@ COPY . .
 # Build jar (handles both root and backend directory context)
 RUN if [ -f "./backend/pom.xml" ]; then cd backend && mvn clean package -DskipTests -B; else mvn clean package -DskipTests -B; fi
 
-# Extract generated JAR file to /app/app.jar
-RUN find . -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec cp {} /app/app.jar \;
+# Copy generated executable JAR file to /app/app.jar
+RUN if [ -f "./backend/target/laundryhub-backend-1.0.0-SNAPSHOT.jar" ]; then cp ./backend/target/laundryhub-backend-1.0.0-SNAPSHOT.jar /app/app.jar; else cp ./target/laundryhub-backend-1.0.0-SNAPSHOT.jar /app/app.jar; fi
 
 # --- STAGE 2: Lightweight Runtime Image ---
 FROM eclipse-temurin:17-jre-alpine

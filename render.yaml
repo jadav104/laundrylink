@@ -3,11 +3,9 @@ services:
   - type: web
     name: laundryhub-backend
     env: docker
-    dockerContext: ./backend
-    dockerfilePath: ./backend/Dockerfile
-    region: singapore
+    dockerContext: .
+    dockerfilePath: backend/Dockerfile
     plan: free
-    healthCheckPath: /api/shops
     envVars:
       - key: PORT
         value: 10000
@@ -17,7 +15,7 @@ services:
     name: laundryhub-frontend
     env: static
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    staticPublishPath: dist
     routes:
       - type: rewrite
         source: /*
