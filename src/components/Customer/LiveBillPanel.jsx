@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { ShoppingBag, Plus, Minus, CheckCircle, Truck, ShieldCheck, Zap, AlertTriangle, Store } from 'lucide-react';
-import { carePreferencesOptions, deliveryModes } from '../../data/mockData';
+import { deliveryModes } from '../../data/mockData';
 
 export const LiveBillPanel = () => {
   const { cart, setCart, updateCartQty, setIsCheckoutOpen, shops } = useApp();

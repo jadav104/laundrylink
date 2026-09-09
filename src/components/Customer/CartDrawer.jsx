@@ -1,7 +1,15 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { X, Trash2, Plus, Minus, CheckCircle, Sparkles, Truck, ShieldCheck } from 'lucide-react';
-import { carePreferencesOptions } from '../../data/mockData';
+const DEFAULT_CARE_PREFS = [
+  "Standard Detergent",
+  "Organic Detergent",
+  "Hypoallergenic Detergent",
+  "Extra Fabric Softener",
+  "Extra Starch (Crisp)",
+  "Gentle Solvent Clean",
+  "Separate Color Wash"
+];
 
 export const CartDrawer = () => {
   const {
@@ -136,7 +144,7 @@ export const CartDrawer = () => {
                   <Sparkles size={16} color="var(--primary)" /> Care Preferences
                 </h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {(carePreferencesOptions || []).map((pref, idx) => {
+                  {DEFAULT_CARE_PREFS.map((pref, idx) => {
                     const selected = carePrefs.includes(pref);
                     return (
                       <button
