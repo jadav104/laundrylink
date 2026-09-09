@@ -444,3 +444,14 @@ export const vadodaraLocations = [
   { area: "Bhayli", pincode: "391410", landmark: "Vasna-Bhayli Main Road / Canal", nearestShop: "Vasna & Bhayli Eco Wash Studio" }
 ];
 
+export const carePreferencesOptions = [
+  "Standard Detergent",
+  "Organic Detergent",
+  "Hypoallergenic Detergent",
+  "Extra Fabric Softener",
+  "Extra Starch (Crisp)",
+  "Gentle Solvent Clean",
+  "Separate Color Wash"
+];
+
+
