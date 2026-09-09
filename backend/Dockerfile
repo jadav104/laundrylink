@@ -2,22 +2,21 @@
 FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# Copy Maven POM and dependency descriptors
-COPY pom.xml .
+# Copy repository context
+COPY . .
 
-# Download dependencies (cached layer)
-RUN mvn dependency:go-offline -B || true
+# Build jar (handles both root and backend directory context)
+RUN if [ -f "./backend/pom.xml" ]; then cd backend && mvn clean package -DskipTests -B; else mvn clean package -DskipTests -B; fi
 
-# Copy source code and build executable jar
-COPY src ./src
-RUN mvn package -DskipTests -B
+# Extract generated JAR file to /app/app.jar
+RUN find . -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec cp {} /app/app.jar \;
 
 # --- STAGE 2: Lightweight Runtime Image ---
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copy compiled JAR from build stage
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/app.jar app.jar
 
 # Expose default port
 EXPOSE 8080
