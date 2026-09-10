@@ -2,6 +2,18 @@
 
 LaundryHub is a modern, full-stack local laundry service marketplace connecting customers with nearby laundry shops, dry cleaners, and shoe care providers in Vadodara.
 
+---
+
+## 🔗 Live Production Links
+
+- **🌐 Live Web Application (Vercel)**: [https://laundrylink-beryl.vercel.app/](https://laundrylink-beryl.vercel.app/)
+- **⚙️ Live Backend REST API (Render)**: [https://laundryhub-backend-t9z2.onrender.com/api](https://laundryhub-backend-t9z2.onrender.com/api)
+- **📋 Live Shops & Services Catalog**: [https://laundryhub-backend-t9z2.onrender.com/api/shops](https://laundryhub-backend-t9z2.onrender.com/api/shops)
+- **🗄️ Live H2 Database Console**: [https://laundryhub-backend-t9z2.onrender.com/h2-console](https://laundryhub-backend-t9z2.onrender.com/h2-console) *(JDBC URL: `jdbc:h2:mem:laundryhubdb`, Username: `sa`)*
+- **📁 GitHub Source Code Repository**: [https://github.com/jadav104/laundrylink](https://github.com/jadav104/laundrylink)
+
+---
+
 ## 🌟 Key Features
 
 ### 🛍️ Customer View
@@ -71,28 +83,3 @@ mvn spring-boot:run
 ```
 - **REST API Endpoint**: `http://localhost:8080/api`
 - **H2 Database Console**: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:laundryhubdb`, User: `sa`)
-
----
-
-## 📤 How to Upload / Push to GitHub
-
-1. Open terminal inside the project directory:
-   ```bash
-   cd d:\lundry
-   ```
-2. Initialize Git repository:
-   ```bash
-   git init
-   ```
-3. Add files and commit:
-   ```bash
-   git add .
-   git commit -m "Initial commit - LaundryHub Full Stack Marketplace with Java Spring Boot Backend"
-   ```
-4. Create a new repository on [GitHub.com](https://github.com/new).
-5. Link your remote GitHub repository and push:
-   ```bash
-   git branch -M main
-   git remote add origin https://github.com/YOUR_GITHUB_USERNAME/laundryhub.git
-   git push -u origin main
-   ```
