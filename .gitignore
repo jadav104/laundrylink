@@ -13,6 +13,7 @@ yarn-error.log*
 
 # Java Maven build outputs
 backend/target/
+backend/.mvn/
 backend/*.log
 *.class
 *.jar
