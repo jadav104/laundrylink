@@ -4,7 +4,6 @@ import com.laundryhub.dto.OrderCreateRequest;
 import com.laundryhub.dto.RejectOrderRequest;
 import com.laundryhub.model.Order;
 import com.laundryhub.service.OrderService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,11 +12,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class OrderController {
 
     private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {

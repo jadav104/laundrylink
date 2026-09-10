@@ -3,7 +3,6 @@ package com.laundryhub.controller;
 import com.laundryhub.model.LaundryService;
 import com.laundryhub.model.Shop;
 import com.laundryhub.service.ShopService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +11,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/shops")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class ShopController {
 
     private final ShopService shopService;
+
+    public ShopController(ShopService shopService) {
+        this.shopService = shopService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Shop>> getApprovedShops() {

@@ -2,7 +2,6 @@ package com.laundryhub.config;
 
 import com.laundryhub.model.*;
 import com.laundryhub.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -10,13 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
     private final OrderRepository orderRepository;
     private final ComplaintRepository complaintRepository;
+
+    public DataSeeder(UserRepository userRepository, ShopRepository shopRepository, OrderRepository orderRepository, ComplaintRepository complaintRepository) {
+        this.userRepository = userRepository;
+        this.shopRepository = shopRepository;
+        this.orderRepository = orderRepository;
+        this.complaintRepository = complaintRepository;
+    }
 
     @Override
     public void run(String... args) throws Exception {

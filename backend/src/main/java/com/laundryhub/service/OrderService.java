@@ -5,7 +5,6 @@ import com.laundryhub.dto.RejectOrderRequest;
 import com.laundryhub.model.Order;
 import com.laundryhub.model.OrderItem;
 import com.laundryhub.repository.OrderRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
+
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();

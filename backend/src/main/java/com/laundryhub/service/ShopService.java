@@ -5,7 +5,6 @@ import com.laundryhub.model.Shop;
 import com.laundryhub.model.ShopWarning;
 import com.laundryhub.repository.ServiceRepository;
 import com.laundryhub.repository.ShopRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ShopService {
 
     private final ShopRepository shopRepository;
     private final ServiceRepository serviceRepository;
+
+    public ShopService(ShopRepository shopRepository, ServiceRepository serviceRepository) {
+        this.shopRepository = shopRepository;
+        this.serviceRepository = serviceRepository;
+    }
 
     public List<Shop> getAllShops() {
         return shopRepository.findAll();

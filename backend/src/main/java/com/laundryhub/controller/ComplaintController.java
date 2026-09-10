@@ -2,7 +2,6 @@ package com.laundryhub.controller;
 
 import com.laundryhub.model.Complaint;
 import com.laundryhub.service.ComplaintService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +9,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/complaints")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class ComplaintController {
 
     private final ComplaintService complaintService;
+
+    public ComplaintController(ComplaintService complaintService) {
+        this.complaintService = complaintService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Complaint>> getAllComplaints() {

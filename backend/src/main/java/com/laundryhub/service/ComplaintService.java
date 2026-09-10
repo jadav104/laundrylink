@@ -2,7 +2,6 @@ package com.laundryhub.service;
 
 import com.laundryhub.model.Complaint;
 import com.laundryhub.repository.ComplaintRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,10 +9,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ComplaintService {
 
     private final ComplaintRepository complaintRepository;
+
+    public ComplaintService(ComplaintRepository complaintRepository) {
+        this.complaintRepository = complaintRepository;
+    }
 
     public List<Complaint> getAllComplaints() {
         return complaintRepository.findAll();
