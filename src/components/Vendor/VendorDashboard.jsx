@@ -17,11 +17,16 @@ export const VendorDashboard = () => {
   const isVendorUser = currentUser && currentUser.role === 'vendor';
   const isDemoSession = !currentUser || currentUser.isDemo || currentUser.id === 'usr-jadav';
   const vendorShopId = currentUser?.shopId || activeVendorId || shops[0]?.id;
-  const activeShop = shops.find((s) => s.id === vendorShopId) || shops[0];
+  const activeShop = shops.find((s) => s.id === vendorShopId) || shops[0] || {
+    id: 'shop-1',
+    name: 'Sparkle & Spin Laundry Hub',
+    services: [],
+    warnings: []
+  };
 
   // Real Provider Mode: show ONLY real customer orders. Demo Mode: show sample presentation orders.
   const shopOrders = orders.filter((o) => {
-    if (!o || o.shopId !== activeShop.id) return false;
+    if (!o || !activeShop || o.shopId !== activeShop.id) return false;
     if (!isDemoSession && o.isDemo) return false;
     return true;
   });

@@ -6,7 +6,14 @@ const AppContext = createContext();
 const loadDB = (key, fallback) => {
   try {
     const data = localStorage.getItem(`laundryhub_${key}`);
-    return data ? JSON.parse(data) : fallback;
+    if (data) {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length === 0 && Array.isArray(fallback) && fallback.length > 0) {
+        return fallback;
+      }
+      return parsed;
+    }
+    return fallback;
   } catch (e) {
     return fallback;
   }
@@ -24,11 +31,11 @@ export const AppProvider = ({ children }) => {
   const [authView, setAuthView] = useState(() => loadDB('authView', 'welcome'));
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(() => !loadDB('currentUser', null));
 
-  // Database tables loaded from LocalStorage (Clean defaults for Real Mode)
-  const [userDB, setUserDB] = useState(() => loadDB('userDB', []));
-  const [shops, setShops] = useState(() => loadDB('shops', []));
-  const [orders, setOrders] = useState(() => loadDB('orders', []));
-  const [pendingVendors, setPendingVendors] = useState(() => loadDB('pendingVendors', []));
+  // Database tables loaded from LocalStorage (Fallback to default data if empty)
+  const [userDB, setUserDB] = useState(() => loadDB('userDB', initialUserDB));
+  const [shops, setShops] = useState(() => loadDB('shops', initialShops));
+  const [orders, setOrders] = useState(() => loadDB('orders', initialOrders));
+  const [pendingVendors, setPendingVendors] = useState(() => loadDB('pendingVendors', initialPendingVendors));
 
   // Sync Database & Session Changes to LocalStorage
   useEffect(() => { saveDB('shops', shops); }, [shops]);
