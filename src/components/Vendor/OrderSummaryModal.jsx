@@ -173,7 +173,7 @@ export const OrderSummaryModal = ({ order, isOpen, onClose, onOpenReject }) => {
             </div>
             {surgeFee > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '6px', color: '#b45309', fontWeight: 600 }}>
-                <span>Speed Express Surge ({order.deliveryMode.toUpperCase()})</span>
+                <span>Speed Express Surge ({(order?.deliveryMode || 'express').toUpperCase()})</span>
                 <span>+₹{surgeFee.toFixed(2)}</span>
               </div>
             )}

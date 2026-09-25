@@ -45,6 +45,39 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { saveDB('currentUser', currentUser); }, [currentUser]);
   useEffect(() => { saveDB('authView', authView); }, [authView]);
 
+  // Backend API Sync (Attempts to sync with Spring Boot Backend if available)
+  const API_BASE = import.meta.env?.VITE_BACKEND_URL || 'http://localhost:8080/api';
+
+  useEffect(() => {
+    const fetchBackendData = async () => {
+      try {
+        const shopsRes = await fetch(`${API_BASE}/shops/all`);
+        if (shopsRes.ok) {
+          const fetchedShops = await shopsRes.json();
+          if (Array.isArray(fetchedShops) && fetchedShops.length > 0) {
+            setShops(fetchedShops);
+          }
+        }
+      } catch (e) {
+        // Fallback silently to mock/localStorage data
+      }
+
+      try {
+        const ordersRes = await fetch(`${API_BASE}/orders`);
+        if (ordersRes.ok) {
+          const fetchedOrders = await ordersRes.json();
+          if (Array.isArray(fetchedOrders) && fetchedOrders.length > 0) {
+            setOrders(fetchedOrders);
+          }
+        }
+      } catch (e) {
+        // Fallback silently to mock/localStorage data
+      }
+    };
+
+    fetchBackendData();
+  }, []);
+
   // Active Role and Vendor Selection
   const [currentRole, setCurrentRole] = useState(() => loadDB('currentRole', 'customer'));
   useEffect(() => { saveDB('currentRole', currentRole); }, [currentRole]);
@@ -300,6 +333,26 @@ export const AppProvider = ({ children }) => {
     clearCart();
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
+
+    // Sync to backend API if reachable
+    fetch(`${API_BASE}/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerName: newOrder.customerName,
+        customerPhone: newOrder.customerPhone,
+        customerEmail: currentUser?.email || 'customer@example.com',
+        shopId: newOrder.shopId,
+        shopName: newOrder.shopName,
+        deliveryMode: newOrder.deliveryMode,
+        pickupAddress: newOrder.pickupAddress,
+        pickupSlot: newOrder.pickupSlot,
+        deliverySlot: newOrder.deliverySlot,
+        totalAmount: newOrder.totalAmount,
+        carePreferences: newOrder.carePreferences,
+        items: newOrder.items
+      })
+    }).catch(() => {});
   };
 
   // Vendor Actions

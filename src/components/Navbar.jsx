@@ -83,7 +83,7 @@ export const Navbar = ({ onGoToWelcome }) => {
           <span style={{ fontWeight: 600 }}>Marketplace Mode:</span>
           {currentUser ? (
             <span style={{ color: '#818cf8', fontWeight: 600 }}>
-              Logged in as {currentUser.name} ({currentUser.type.toUpperCase()})
+              Logged in as {currentUser.name} ({(currentUser.role || currentUser.type || 'user').toUpperCase()})
             </span>
           ) : (
             <span style={{ opacity: 0.8 }}>Switch perspectives to test platform features</span>
