@@ -2,6 +2,7 @@ services:
   - type: web
     name: laundryhub-backend
     env: docker
-    dockerfilePath: Dockerfile
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
     plan: free
     region: singapore
