@@ -27,12 +27,10 @@ export const isDemoShop = (shop) => {
 export const CheckoutModal = () => {
   const { isCheckoutOpen, setIsCheckoutOpen, placeOrder, cart, currentUser, shops, userLocation, updateUserLocation } = useApp();
 
-  const isDemoMode = currentUser?.isDemo;
-  const activeShops = (shops || []).filter(s => {
-    if (s.status === 'Delisted' || s.status === 'Pending Approval') return false;
-    if (!isDemoMode && isDemoShop(s)) return false;
-    return true;
-  });
+  const activeShops = (() => {
+    const list = (shops || []).filter(s => s && s.status !== 'Delisted' && s.status !== 'Pending Approval');
+    return list.length > 0 ? list : (shops || []);
+  })();
   const [selectedShopId, setSelectedShopId] = useState(cart?.shopId || activeShops[0]?.id || '');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
