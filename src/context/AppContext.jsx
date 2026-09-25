@@ -123,9 +123,51 @@ export const AppProvider = ({ children }) => {
   // Auth Functions
   const loginUser = (userType, email, name, extra = {}) => {
     // Search in userDB if registered
-    const existing = userDB.find((u) => u.email.toLowerCase() === email?.toLowerCase());
-    
-    const user = existing || {
+    const existing = userDB.find((u) => u.email?.toLowerCase() === email?.toLowerCase());
+
+    let shopId = extra.shopId || existing?.shopId;
+
+    // If logging in as vendor and no existing shop is found, create/link a real shop for this provider
+    if (userType === 'vendor' && !shopId) {
+      const matchedShop = shops.find(s =>
+        s.ownerName?.toLowerCase() === (name || existing?.name || '').toLowerCase() ||
+        s.name?.toLowerCase() === (extra.shopName || existing?.shopName || '').toLowerCase()
+      );
+      if (matchedShop) {
+        shopId = matchedShop.id;
+      } else {
+        const newShopId = `shop-v-${Date.now()}`;
+        const newShop = {
+          id: newShopId,
+          name: extra.shopName || `${name || 'Provider'}'s Laundry Hub`,
+          ownerName: name || 'Provider Owner',
+          rating: 5.0,
+          reviewsCount: 1,
+          distance: "0.5 km away (Verified Provider)",
+          turnaround: "24 Hours",
+          expressAvailable: true,
+          emergencyAvailable: true,
+          address: extra.address || "Alkapuri, Vadodara",
+          phone: extra.phone || "+91 98765 43210",
+          image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
+          tags: ["Verified Vendor", "Same Day Service", "Approved"],
+          status: "Approved",
+          minOrder: "₹120.00",
+          commissionRate: "15%",
+          warnings: [],
+          services: [
+            { id: `s1-${Date.now()}`, name: "Wash & Fold (per kg)", price: 60.00, unit: "kg", category: "Wash & Fold", desc: "Clean, fresh washed daily wear" },
+            { id: `s2-${Date.now()}`, name: "Wash & Steam Press (per piece)", price: 25.00, unit: "piece", category: "Ironing", desc: "Wrinkle-free steam press finish" },
+            { id: `s3-${Date.now()}`, name: "Heavy Saree & Suit Dry Clean", price: 250.00, unit: "set", category: "Dry Cleaning", desc: "Eco-solvent dry cleaning" },
+            { id: `s4-${Date.now()}`, name: "Sneaker & Shoe Deep Wash", price: 249.00, unit: "pair", category: "Shoe Care", desc: "Foam cleansing & deodorizing" }
+          ]
+        };
+        setShops((prev) => [newShop, ...prev]);
+        shopId = newShopId;
+      }
+    }
+
+    const user = existing ? { ...existing, shopId: shopId || existing.shopId } : {
       id: `usr-${Date.now()}`,
       role: userType,
       name: name || (userType === 'customer' ? 'Priya Sharma' : userType === 'vendor' ? 'Rajesh Kumar' : 'Platform Admin'),
@@ -133,25 +175,27 @@ export const AppProvider = ({ children }) => {
       phone: extra.phone || '+91 98765 43210',
       shopName: extra.shopName || (userType === 'vendor' ? 'Sparkle & Spin Laundry Hub' : ''),
       address: extra.address || 'Flat 302, Royal Residency, Alkapuri, Vadodara - 390007',
-      shopId: extra.shopId || (userType === 'vendor' ? 'shop-1' : null)
+      shopId: shopId || (userType === 'vendor' ? 'shop-1' : null)
     };
 
     if (!existing) {
       setUserDB((prev) => [user, ...prev]);
+    } else {
+      setUserDB((prev) => prev.map(u => u.email?.toLowerCase() === email?.toLowerCase() ? user : u));
     }
 
     setCurrentUser(user);
     setCurrentRole(userType);
 
     if (userType === 'vendor') {
-      const targetShopId = extra.shopId || user.shopId || shops[0]?.id || 'shop-1';
+      const targetShopId = shopId || user.shopId || shops[0]?.id || 'shop-1';
       setActiveVendorId(targetShopId);
     }
 
     setIsAuthModalOpen(false);
   };
 
-  // REGISTER NEW VENDOR & SUBMIT FOR ADMIN APPROVAL
+  // REGISTER NEW VENDOR & SUBMIT FOR MARKETPLACE
   const registerVendorShop = (vendorData) => {
     const newShopId = `shop-${Date.now()}`;
     const newShopName = vendorData.shopName || 'New Laundry Hub';
@@ -170,15 +214,15 @@ export const AppProvider = ({ children }) => {
       address: vendorData.address || "Alkapuri, Vadodara",
       phone: vendorData.phone || "+91 98765 43210",
       image: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=800&q=80",
-      tags: ["Verified Vendor", "New Partner", "Pending Approval"],
-      status: "Pending Approval", // Requires Admin Approval to list on Customer Marketplace!
+      tags: ["Verified Vendor", "New Partner", "Approved"],
+      status: "Approved", // Live immediately on Customer Marketplace
       minOrder: "₹120.00",
       commissionRate: "15%",
       warnings: [],
       services: [
         { id: `s1-${Date.now()}`, name: "Wash & Fold (per kg)", price: 60.00, unit: "kg", category: "Wash & Fold", desc: "Clean, fresh washed daily wear" },
         { id: `s2-${Date.now()}`, name: "Wash & Steam Press (per piece)", price: 25.00, unit: "piece", category: "Ironing", desc: "Wrinkle-free steam press finish" },
-        { id: `s3-${Date.now()}`, name: "Heavy Saree & Suit Dry Clean", price: 250.00, unit: "set", category: "Dry Cleaning", desc: "Eco-solvent solvent dry cleaning" },
+        { id: `s3-${Date.now()}`, name: "Heavy Saree & Suit Dry Clean", price: 250.00, unit: "set", category: "Dry Cleaning", desc: "Eco-solvent dry cleaning" },
         { id: `s4-${Date.now()}`, name: "Sneaker & Shoe Deep Wash", price: 249.00, unit: "pair", category: "Shoe Care", desc: "Foam cleansing & deodorizing" }
       ]
     };
