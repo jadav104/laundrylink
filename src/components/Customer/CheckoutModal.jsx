@@ -38,13 +38,29 @@ export const CheckoutModal = () => {
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
   const [customerInfo, setCustomerInfo] = useState({
-    name: currentUser?.name || "Priya Patel",
-    phone: currentUser?.phone || "+91 98765 43210",
+    name: currentUser?.name || '',
+    phone: currentUser?.phone || '',
     address: userLocation || currentUser?.address || "Flat 302, Royal Residency, Alkapuri, Vadodara - 390007",
     pickupSlot: "Tomorrow, 9:00 AM - 11:00 AM",
     deliverySlot: "Tomorrow, 5:00 PM - 7:00 PM",
     paymentMethod: "UPI (Google Pay / PhonePe / Paytm)"
   });
+
+  React.useEffect(() => {
+    if (isCheckoutOpen) {
+      if (currentUser?.name) {
+        setCustomerInfo(prev => ({
+          ...prev,
+          name: currentUser.name,
+          phone: currentUser.phone || prev.phone,
+          address: userLocation || currentUser.address || prev.address
+        }));
+      }
+      if (cart?.shopId) {
+        setSelectedShopId(cart.shopId);
+      }
+    }
+  }, [isCheckoutOpen, currentUser, cart?.shopId, userLocation]);
 
   const detectLocation = () => {
     setIsDetectingLocation(true);
@@ -326,7 +342,7 @@ export const CheckoutModal = () => {
           <div style={{ marginBottom: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <h4 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Store size={16} color="var(--primary)" /> Select Provider Near Your Location
+                <Store size={16} color="var(--primary)" /> Select Laundry Shop / Provider
               </h4>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ fontSize: '0.72rem', background: 'var(--primary-light)', color: 'var(--primary)', padding: '2px 8px', borderRadius: 'var(--radius-full)', fontWeight: 600 }}>
@@ -352,6 +368,31 @@ export const CheckoutModal = () => {
                   <RefreshCw size={12} style={{ animation: isRefreshing ? 'spin 0.5s linear infinite' : 'none' }} /> Refresh
                 </button>
               </div>
+            </div>
+
+            {/* Explicit Shop Selector Dropdown */}
+            <div style={{ marginBottom: '10px' }}>
+              <select
+                value={selectedShopId}
+                onChange={(e) => setSelectedShopId(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '2px solid var(--primary)',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  background: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  cursor: 'pointer'
+                }}
+              >
+                {sortedShops.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    🏪 {s.name} ({s.distance || '0.5 km'}) - Rating: ★{s.rating}
+                  </option>
+                ))}
+              </select>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {sortedShops.map((shop) => {
